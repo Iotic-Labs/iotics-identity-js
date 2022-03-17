@@ -12,9 +12,14 @@ wasm-init:
 	@mkdir -p ./dist
 	@cp ${GOROOT}/misc/wasm/wasm_exec.js ./src
 
-build: clean wasm-init
+wasm-build: wasm-clean wasm-init
 	@GOOS=js GOARCH=wasm go build -o $(WASM_OUT) $(LIB_GO)
 
+build: clean wasm-build
+	@npm run build:browser
+	 
+wasm-clean: 
+	@rm -f $(WASM_OUT) ./src/wasm_exec.js
 
-clean:
-	@rm -f ./dist/* ./src/wasm_exec.js
+clean: wasm-clean
+	@rm -f ./dist/*

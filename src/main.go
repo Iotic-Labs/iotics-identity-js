@@ -3,8 +3,6 @@ package main
 import (
 	"fmt"
 	"syscall/js"
-
-	"strconv"
 )
 
 var c chan bool
@@ -17,9 +15,9 @@ func init() {
 
 func main() {
 	// here, we are simply declaring the our function `sayHelloJS` as a global JS function. That means we can call it just like any other JS function.
-	js.Global().Set("add", js.FuncOf(Add))
+	js.Global().Set("Add", js.FuncOf(Add))
 
-	println("Done.. done.. done...")
+	println("ioticsIdentity lib initialised")
 
 	// tells the channel we created in init() to "stop".
 	<-c
@@ -29,16 +27,10 @@ func Add(jsV js.Value, inputs []js.Value) interface{} {
 	if len(inputs) != 2 {
 		return fmt.Errorf("must pass two values")
 	}
-	i1, err := strconv.Atoi(inputs[0].String())
-	if err != nil {
-		return err
-	}
-	i2, err := strconv.Atoi(inputs[1].String())
-	if err != nil {
-		return err
-	}
+	i0 := inputs[0].Int()
+	i1 := inputs[1].Int()
 
-	return i1 + i2
+	return i0 + i1
 }
 
 func StoreValueInDOM(jsV js.Value, inputs []js.Value) interface{} {

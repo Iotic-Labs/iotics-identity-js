@@ -5,9 +5,13 @@
   <body>
     <script src="./ioticsIdentity.js"></script>
     <script>
-      const { add, sub } = ioticsIdentity;
-      console.log("1 + 2 = " + add(1, 2));
-      console.log("2 - 1 = " + sub(2, 1));
+      window.onload = function (e) {
+        const { loadLib, add } = ioticsIdentity;
+        loadLib().then(() => {
+          console.log("foo");
+          console.log("1 + 2 = " + add(1, 2));
+        });
+      };
     </script>
   </body>
 </html>
