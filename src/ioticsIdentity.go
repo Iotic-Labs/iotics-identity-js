@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"net/url"
@@ -31,11 +30,11 @@ type apiError struct {
 	message string
 }
 
-func (ae *apiError) toJSON() string {
-	return dictToJSON(dict{
+func (ae *apiError) toJSON() map[string]interface{} {
+	return dict{
 		"error":     ae.err.Error(),
 		"mnemonics": ae.message,
-	})
+	}
 }
 
 func NewApiError(message string, err error) *apiError {
@@ -47,14 +46,6 @@ func NewApiError(message string, err error) *apiError {
 
 func jsLog(s string) {
 	js.Global().Get("console").Call("log", s)
-}
-
-func dictToJSON(in dict) string {
-	ret, err := json.Marshal(in)
-	if err != nil {
-		return NewApiError("unable to marshall map", err).toJSON()
-	}
-	return string(ret)
 }
 
 // init is called even before main is called.
@@ -86,17 +77,12 @@ func NewHandler(callback func(js.Value, []js.Value) (interface{}, *apiError), th
 	handler := js.FuncOf(func(_ js.Value, promiseArgs []js.Value) interface{} {
 		resolve := promiseArgs[0]
 		reject := promiseArgs[1]
-		jsLog("new promise")
-
 		// Run this code asynchronously
 		go func() {
-			jsLog("about to invoke callback")
 			result, errorObject := callback(this, args)
 			if errorObject != nil {
-				jsLog("callback reject")
 				reject.Invoke(errorObject.toJSON())
 			} else {
-				jsLog(fmt.Sprintf("callback resolve %+v", result))
 				// Resolve the Promise
 				resolve.Invoke(result)
 			}
@@ -108,7 +94,6 @@ func NewHandler(callback func(js.Value, []js.Value) (interface{}, *apiError), th
 
 	// Create and return the Promise object
 	promiseConstructor := js.Global().Get("Promise")
-	jsLog("new promise return")
 	return promiseConstructor.New(handler)
 }
 
@@ -126,14 +111,37 @@ func createDefaultSeed(this js.Value, args []js.Value) (interface{}, *apiError) 
 	if err != nil {
 		return nil, NewApiError("unable to generate mnemonics", err)
 	}
-	j := dictToJSON(dict{
+
+	return dict{
 		"seed":      seed58,
 		"mnemonics": mnemonics,
-	})
-
-	return j, nil
+	}, nil
 
 }
+
+// func DelegateControl(this js.Value, args []js.Value) interface{} {
+// 	return NewHandler(delegateControl, this, args)
+// }
+
+// func delegateControl(this js.Value, args []js.Value) (interface{}, *apiError) {
+// 	if len(args) != 4 {
+// 		return nil, NewApiError("required 4 arguments: resolverAddress, twinDiD, agentDiD, delegationName", errors.New("invalid argument"))
+// 	}
+
+// 	addr, err := url.Parse(args[0].String())
+// 	if err != nil {
+// 		return nil, NewApiError("parsing resolver address failed", err)
+// 	}
+
+// 	twinDiD := args[1].String()
+// 	twinId, err = api.GetTwinIdentity(opts * api.GetIdentityOpts)
+// 	agentDiD := args[2].String()
+// 	delegationName := args[2].String()
+
+// 	resolverClient := register.NewDefaultRestResolverClient(addr)
+
+// 	err = api.DelegateControl(resolverClient, twinId, agentId, delegationName)
+// }
 
 func CreateAgentIdentityP(this js.Value, args []js.Value) interface{} {
 	return NewHandler(createAgentIdentity, this, args)
@@ -164,19 +172,18 @@ func createTypedIdentity(idType IdType, this js.Value, args []js.Value) (interfa
 		return nil, NewApiError("required 4 arguments: resolverAddress, keyName, name, seed", errors.New("invalid argument"))
 	}
 	cResolverAddress := args[0].String()
-	cKeyName := args[1].String()
-	cName := args[2].String()
-	cSeed := args[3].String()
-
 	if len(cResolverAddress) == 0 {
 		return nil, NewApiError("invalid resolverAddress", errors.New("resolver address not a url"))
 	}
+	cKeyName := args[1].String()
 	if len(cKeyName) == 0 {
 		return nil, NewApiError("invalid key name", errors.New("empty key name"))
 	}
+	cName := args[2].String()
 	if len(cName) == 0 {
 		return nil, NewApiError("invalid name", errors.New("empty name"))
 	}
+	cSeed := args[3].String()
 	if len(cSeed) == 0 {
 		return nil, NewApiError("invalid seed", errors.New("empty seed"))
 	}
@@ -222,9 +229,9 @@ func createIdentity(
 		return nil, NewApiError("unable to create identity", err)
 	}
 
-	return dictToJSON(dict{
+	return dict{
 		"did": id.Did(),
-	}), nil
+	}, nil
 }
 
 func StoreValueInDOM(jsV js.Value, inputs []js.Value) interface{} {

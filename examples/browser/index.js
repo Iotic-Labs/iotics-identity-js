@@ -28,7 +28,7 @@ function outputJSON(v) {
 
 async function createDefaultSeedClick() {
     json = await createDefaultSeed()
-    $("#seed").val(JSON.parse(json).seed)
+    $("#seed").val(json.seed)
     outputJSON(json)
     return false;
 }
