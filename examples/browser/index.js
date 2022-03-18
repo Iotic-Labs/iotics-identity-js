@@ -8,7 +8,10 @@ window.onload = function (e) {
 };
 
 function initUi() {
-
+    $("#createDefaultSeedId").click(createDefaultSeedCallback)
+    $("#createUserIdentityId").click(createUserIdentityCallback)
+    $("#createAgentIdentityId").click(createAgentIdentityCallback)
+    $("#createTwinIdentityId").click(createTwinIdentityCallback)
 }
 
 function createDefaultSeedCallback() {

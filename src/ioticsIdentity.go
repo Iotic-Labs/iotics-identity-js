@@ -4,11 +4,9 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"errors"
-	"syscall/js"
-
-	"encoding/hex"
 	"fmt"
 	"net/url"
+	"syscall/js"
 
 	"github.com/Iotic-Labs/iotics-identity-go/pkg/api"
 	"github.com/Iotic-Labs/iotics-identity-go/pkg/crypto"
@@ -108,6 +106,7 @@ func createIdentity(
 	seed string,
 	override bool,
 ) interface{} {
+	jsLog("seed: '" + seed + "'")
 	seedBytes, err := hex.DecodeString(seed)
 	if err != nil {
 		return jsonError("failed to decode seed", err)
