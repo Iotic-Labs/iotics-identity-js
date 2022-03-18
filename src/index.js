@@ -50,16 +50,21 @@ function loadLib() {
  * 
  * @returns JSON object
  */
-async function createDefaultSeed() {
+function createDefaultSeed() {
+    return CreateDefaultSeed()
+}
+
+async function sync(f, errMessage) {
     try {
-        const response = await CreateDefaultSeed()
+        const response = await f()
         return JSON.parse(response)
     } catch (err) {
         return {
             "error": err,
-            "message": "exception whilst creating seed"
+            "message": errMessage
         }
     }
+
 }
 
 /**

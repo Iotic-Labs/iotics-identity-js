@@ -18,40 +18,54 @@ function initUi() {
     $("#createTwinIdentityId").click(createTwinIdentityClick)
 }
 
+function outputJSON(v) {
+    var o = v
+    if (getType(v) == 'string') {
+        o = JSON.parse(v)
+    }
+    $("#output-text").html(JSON.stringify(o));
+}
+
 async function createDefaultSeedClick() {
-    json = await createDefaultSeed();
-    $("#seed").val(json.seed)
-    $("#output-text").html(JSON.stringify(json));
+    json = await createDefaultSeed()
+    $("#seed").val(JSON.parse(json).seed)
+    outputJSON(json)
     return false;
 }
 
-function createAgentIdentityClick() {
+async function createAgentIdentityClick() {
     resolver = $("#resolverId").val()
     agentName = $("#agentNameId").val()
     agentKeyId = $("#agentKeyId").val()
     seed = $("#seed").val()
-    json = createAgentIdentity(resolver, agentKeyId, agentName, seed);
-    $("#output-text").html(JSON.stringify(json));
+    json = await createAgentIdentity(resolver, agentKeyId, agentName, seed);
+    outputJSON(json)
     return false;
 }
 
-function createUserIdentityClick() {
+async function createUserIdentityClick() {
     resolver = $("#resolverId").val()
     agentName = $("#userNameId").val()
     agentKeyId = $("#userKeyId").val()
     seed = $("#seed").val()
-    json = createUserIdentity(resolver, agentKeyId, agentName, seed);
-    $("#output-text").html(JSON.stringify(json));
+    json = await createUserIdentity(resolver, agentKeyId, agentName, seed);
+    outputJSON(json)
     return false;
 }
 
-function createTwinIdentityClick() {
+async function createTwinIdentityClick() {
     resolver = $("#resolverId").val()
     agentName = $("#twinNameId").val()
     agentKeyId = $("#twinKeyId").val()
     seed = $("#seed").val()
-    json = createTwinIdentity(resolver, agentKeyId, agentName, seed);
-    $("#output-text").html(JSON.stringify(json));
+    json = await createTwinIdentity(resolver, agentKeyId, agentName, seed);
+    outputJSON(json)
     return false;
 }
 
+function getType(p) {
+    if (Array.isArray(p)) return 'array';
+    else if (typeof p == 'string') return 'string';
+    else if (p != null && typeof p == 'object') return 'object';
+    else return 'other';
+}
