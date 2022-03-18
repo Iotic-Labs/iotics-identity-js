@@ -27,106 +27,119 @@
   <script src="./ioticsIdentity.js"></script>
   <script src="./index.js"></script>
   <body>
-    <div>
-      <label for="resolverId">Resolver address: </label>
-      <input id="resolverId" type="text" value="https://did.stg.iotics.com" />
-    </div>
-    <br />
-    <div>
-      <label for="seed">Seed: </label>
-      <input
-        id="seed"
-        type="text"
-        size="50"
-        value="BhuaQnatq1H2xSufzVsx77QtiLsMifXZAAPqXnRDNrMH"
-      />
-    </div>
-    <div>
-      <label for="createDefaultSeedId">Generates a new seed: </label>
-      <input
-        id="createDefaultSeedId"
-        type="button"
-        value="create default seed"
-      />
-    </div>
-    <br />
+    <div style="width: 100%; display: table">
+      <div style="display: table-row">
+        <div style="width: 600px; display: table-cell">
+          <div>
+            <label for="resolverId">Resolver address: </label>
+            <input
+              id="resolverId"
+              type="text"
+              value="https://did.stg.iotics.com"
+            />
+          </div>
+          <br />
+          <div>
+            <label for="seed">Seed: </label>
+            <input
+              id="seed"
+              type="text"
+              size="50"
+              value="BhuaQnatq1H2xSufzVsx77QtiLsMifXZAAPqXnRDNrMH"
+            />
+          </div>
+          <div>
+            <label for="createDefaultSeedId">Generates a new seed: </label>
+            <input
+              id="createDefaultSeedId"
+              type="button"
+              value="create default seed"
+            />
+          </div>
+          <br />
 
-    <div>
-      <label for="userNameId">User name: </label>
-      <input id="userNameId" type="text" value="#user-0" />
-    </div>
-    <div>
-      <label for="userKeyId">User key: </label>
-      <input id="userKeyId" type="text" value="user-key-0" />
-    </div>
-    <div>
-      <label for="userDidId">User did: </label>
-      <input id="userDidId" size="40" type="text" value="" />
-    </div>
-    <div>
-      <label for="createUserIdentityId">Creates user identity: </label>
-      <input
-        id="createUserIdentityId"
-        type="button"
-        value="get/create user identity"
-      />
-      <input id="getUserDocId" type="button" value="get user did doc" />
-    </div>
-    <br />
+          <div>
+            <label for="userNameId">User name: </label>
+            <input id="userNameId" type="text" value="#user-0" />
+          </div>
+          <div>
+            <label for="userKeyId">User key: </label>
+            <input id="userKeyId" type="text" value="user-key-0" />
+          </div>
+          <div>
+            <label for="userDidId">User did: </label>
+            <input id="userDidId" size="40" type="text" value="" />
+          </div>
+          <div>
+            <label for="createUserIdentityId">Creates user identity: </label>
+            <input
+              id="createUserIdentityId"
+              type="button"
+              value="get/create user identity"
+            />
+            <input id="getUserDocId" type="button" value="get user did doc" />
+          </div>
+          <br />
 
-    <div>
-      <label for="agentNameId">Agent name: </label>
-      <input id="agentNameId" type="text" value="#agent-0" />
-    </div>
-    <div>
-      <label for="agentKeyId">Agent key: </label>
-      <input id="agentKeyId" type="text" value="agent-key-0" />
-    </div>
-    <div>
-      <label for="agentDidId">Agent did: </label>
-      <input id="agentDidId" size="40" type="text" value="" />
-    </div>
-    <div>
-      <label for="createAgentIdentityId">Creates agent identity: </label>
-      <input
-        id="createAgentIdentityId"
-        type="button"
-        value="get/create agent identity"
-      />
-      <input id="getAgentDocId" type="button" value="get agent did doc" />
-    </div>
-    <br />
-    <div>
-      <label for="twinNameId">Twin name: </label>
-      <input id="twinNameId" type="text" value="#twin-0" />
-    </div>
-    <div>
-      <label for="twinKeyId">Twin key: </label>
-      <input id="twinKeyId" type="text" value="twin-key-0" />
-    </div>
-    <div>
-      <label for="twinDidId">Twin did: </label>
-      <input id="twinDidId" size="40" type="text" value="" />
-    </div>
-    <div>
-      <label for="createTwinIdentityId">Creates twin identity: </label>
-      <input
-        id="createTwinIdentityId"
-        type="button"
-        value="get/create twin identity"
-      />
-      <input id="getTwinDocId" type="button" value="get twin did doc" />
-    </div>
-    <br />
-    <div>
-      <label for="delegateControlId">Delegate control: </label>
-      <input id="delegateControlId" type="button" value="delegate control" />
-    </div>
-    <br />
-    <hr />
-    <br />
-    <div id="output">
-      <pre id="output-text"></pre>
+          <div>
+            <label for="agentNameId">Agent name: </label>
+            <input id="agentNameId" type="text" value="#agent-0" />
+          </div>
+          <div>
+            <label for="agentKeyId">Agent key: </label>
+            <input id="agentKeyId" type="text" value="agent-key-0" />
+          </div>
+          <div>
+            <label for="agentDidId">Agent did: </label>
+            <input id="agentDidId" size="40" type="text" value="" />
+          </div>
+          <div>
+            <label for="createAgentIdentityId">Creates agent identity: </label>
+            <input
+              id="createAgentIdentityId"
+              type="button"
+              value="get/create agent identity"
+            />
+            <input id="getAgentDocId" type="button" value="get agent did doc" />
+          </div>
+          <br />
+          <div>
+            <label for="twinNameId">Twin name: </label>
+            <input id="twinNameId" type="text" value="#twin-0" />
+          </div>
+          <div>
+            <label for="twinKeyId">Twin key: </label>
+            <input id="twinKeyId" type="text" value="twin-key-0" />
+          </div>
+          <div>
+            <label for="twinDidId">Twin did: </label>
+            <input id="twinDidId" size="40" type="text" value="" />
+          </div>
+          <div>
+            <label for="createTwinIdentityId">Creates twin identity: </label>
+            <input
+              id="createTwinIdentityId"
+              type="button"
+              value="get/create twin identity"
+            />
+            <input id="getTwinDocId" type="button" value="get twin did doc" />
+          </div>
+          <br />
+          <div>
+            <label for="delegateControlId">Delegate control: </label>
+            <input
+              id="delegateControlId"
+              type="button"
+              value="delegate control"
+            />
+          </div>
+        </div>
+        <div style="display: table-cell; background-color: #efefdf">
+          <div id="output">
+            <pre id="output-text"></pre>
+          </div>
+        </div>
+      </div>
     </div>
   </body>
 </html>
