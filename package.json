@@ -23,8 +23,8 @@
     "webpack-cli": "^4.9.2"
   },
   "scripts": {
-    "build:browser": "webpack && cp dist/ioticsIdentity.js dist/main.wasm examples/browser",
-    "build:node": "webpack && cp dist/ioticsIdentity.js dist/main.wasm examples/node/ && node examples/node/example.js",
+    "build:browser": "webpack && cp dist/ioticsIdentity.js dist/ioticsIdentity.wasm examples/browser",
+    "build:node": "webpack && cp dist/ioticsIdentity.js dist/ioticsIdentity.wasm examples/node/ && node examples/node/example.js",
     "build": "webpack"
   },
   "repository": {

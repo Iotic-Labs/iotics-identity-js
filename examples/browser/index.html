@@ -2,16 +2,104 @@
   <head>
     <title>Test IOTICS Identity</title>
   </head>
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css"
+    integrity="sha512-aOG0c6nPNzGk+5zjwyJaoRUgCdOrfSDhmMID2u4+OIslr0GjpLKo7Xm0Ao3xmpM4T8AmIouRkqwj1nrdVsLKEQ=="
+    crossorigin="anonymous"
+    referrerpolicy="no-referrer"
+  />
+  <script
+    src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.js"
+    integrity="sha512-n/4gHW3atM3QqRcbCn6ewmpxcLAHGaDjpEBu4xZd47N0W2oQ+6q7oc3PXstrJYXcbNU1OHdQ1T7pAP+gi5Yu8g=="
+    crossorigin="anonymous"
+    referrerpolicy="no-referrer"
+  ></script>
+
+  <script
+    src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"
+    integrity="sha512-uto9mlQzrs59VwILcLiRYeLKPPbS/bT71da/OEBYEwcdNUk8jYIy+D176RYoop1Da+f9mvkYrmj5MCLZWEtQuA=="
+    crossorigin="anonymous"
+    referrerpolicy="no-referrer"
+  ></script>
+
+  <script src="./ioticsIdentity.js"></script>
+  <script src="./index.js"></script>
   <body>
-    <script src="./ioticsIdentity.js"></script>
-    <script>
-      window.onload = function (e) {
-        const { loadLib, add } = ioticsIdentity;
-        loadLib().then(() => {
-          console.log("foo");
-          console.log("1 + 2 = " + add(1, 2));
-        });
-      };
-    </script>
+    <div>
+      <label for="resolverId">The resolver address: </label>
+      <input id="resolverId" type="text" value="https://dev.did.iotics.com" />
+    </div>
+    <div>
+      <label for="userNameId">The user name: </label>
+      <input id="userNameId" type="text" value="#user-0" />
+    </div>
+    <div>
+      <label for="userKeyId">The user key: </label>
+      <input id="userKeyId" type="text" value="user-key-0" />
+    </div>
+    <div>
+      <label for="agentNameId">The agent name: </label>
+      <input id="agentNameId" type="text" value="#agent-0" />
+    </div>
+    <div>
+      <label for="agentKeyId">The agent key: </label>
+      <input id="agentKeyId" type="text" value="agent-key-0" />
+    </div>
+    <br />
+    <div>
+      <label for="createDefaultSeedId">Generates a new seed: </label>
+      <input
+        id="createDefaultSeedId"
+        type="button"
+        value="create default seed"
+        onclick="createDefaultSeedCallback();"
+      />
+      <span
+        id="createDefaultSeedOutput"
+        class="font-family:garamond,serif"
+      ></span>
+    </div>
+    <div>
+      <label for="createAgentIdentityId">Creates agent identity: </label>
+      <input
+        id="createAgentIdentityId"
+        type="button"
+        value="create agent identity"
+        onclick="createAgentIdentityCallback();"
+      />
+      <span
+        id="createAgentIdentityOutput"
+        class="font-family:garamond,serif"
+      ></span>
+    </div>
+
+    <div>
+      <label for="createUserIdentityId">Creates user identity: </label>
+      <input
+        id="createUserIdentityId"
+        type="button"
+        value="create user identity"
+        onclick="createUserIdentityCallback();"
+      />
+      <span
+        id="createUserIdentityOutput"
+        class="font-family:garamond,serif"
+      ></span>
+    </div>
+
+    <div>
+      <label for="createTwinIdentityId">Creates twin identity: </label>
+      <input
+        id="createTwinIdentityId"
+        type="button"
+        value="create twin identity"
+        onclick="createTwinIdentityCallback();"
+      />
+      <span
+        id="createTwinIdentityOutput"
+        class="font-family:garamond,serif"
+      ></span>
+    </div>
   </body>
 </html>

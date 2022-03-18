@@ -2,8 +2,8 @@ GO_EXEC := $(shell which go)
 GO_BIN := $(shell dirname $(GO_EXEC))
 GOROOT := $(shell dirname $(GO_BIN))
 
-WASM_OUT=./dist/main.wasm
-LIB_GO=./src/main.go
+WASM_OUT=./dist/ioticsIdentity.wasm
+LIB_GO=./src/ioticsIdentity.go
 
 
 # since this is getting the file from the local machine, 
