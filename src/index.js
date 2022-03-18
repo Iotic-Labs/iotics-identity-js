@@ -54,6 +54,16 @@ function createDefaultSeed() {
     return CreateDefaultSeed()
 }
 
+function newIdentity(seed, key, name, password, override) {
+    return {
+        "seed": seed,
+        "key": key,
+        "name": name,
+        "password": password,
+        "override": override
+    }
+}
+
 /**
  * Returns either a json object 
  * 
@@ -68,22 +78,33 @@ function createDefaultSeed() {
  * }
  * @returns JSON object
  */
-function createAgentIdentity(resolverAddress, key, name, seed) {
-    return CreateAgentIdentity(resolverAddress, key, name, seed)
+function createAgentIdentity(resolverAddress, identityOpts) {
+    return CreateAgentIdentity(resolverAddress, identityOpts)
 }
 
-function createUserIdentity(resolverAddress, key, name, seed) {
-    return CreateUserIdentity(resolverAddress, key, name, seed)
+function createUserIdentity(resolverAddress, identityOpts) {
+    return CreateUserIdentity(resolverAddress, identityOpts)
 }
 
-function createTwinIdentity(resolverAddress, key, name, seed) {
-    return CreateTwinIdentity(resolverAddress, key, name, seed)
+function createTwinIdentity(resolverAddress, identityOpts) {
+    return CreateTwinIdentity(resolverAddress, identityOpts)
+}
+
+function getRegisteredDocument(resolverAddress, didId) {
+    return GetRegisteredDocument(resolverAddress, didId)
+}
+
+function delegateControl(resolverAddress, twinIdentityOpts, agentIdentityOpts, delegationName) {
+    return DelegateControl(resolverAddress, twinIdentityOpts, agentIdentityOpts, delegationName)
 }
 
 module.exports = {
     loadLib: () => loadLib(),
     createDefaultSeed: () => createDefaultSeed(),
-    createAgentIdentity: (rAddr, k, n, seed) => createAgentIdentity(rAddr, k, n, seed),
-    createUserIdentity: (rAddr, k, n, seed) => createUserIdentity(rAddr, k, n, seed),
-    createTwinIdentity: (rAddr, k, n, seed) => createTwinIdentity(rAddr, k, n, seed),
+    getRegisteredDocument: (rAddr, didId) => getRegisteredDocument(rAddr, didId),
+    createAgentIdentity: (rAddr, identityOpts) => createAgentIdentity(rAddr, identityOpts),
+    createUserIdentity: (rAddr, identityOpts) => createUserIdentity(rAddr, identityOpts),
+    createTwinIdentity: (rAddr, identityOpts) => createTwinIdentity(rAddr, identityOpts),
+    delegateControl: (rAddr, twinIdentityOpts, agentIdentityOpts, delegationName) => delegateControl(rAddr, twinIdentityOpts, agentIdentityOpts, delegationName),
+    newIdentity: (seed, key, name, password, override) => newIdentity(seed, key, name, password, override),
 };

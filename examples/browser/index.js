@@ -1,4 +1,4 @@
-const { loadLib, createDefaultSeed, createAgentIdentity, createTwinIdentity, createUserIdentity } = ioticsIdentity;
+const { loadLib, createDefaultSeed, createAgentIdentity, createTwinIdentity, createUserIdentity, delegateControl, getRegisteredDocument } = ioticsIdentity;
 
 window.onload = function (e) {
     loadLib().then(() => {
@@ -8,14 +8,15 @@ window.onload = function (e) {
 };
 
 function initUi() {
-    $("#createDefaultSeedId").unbind('click');
     $("#createDefaultSeedId").click(createDefaultSeedClick)
-    $("#createUserIdentityId").unbind('click');
     $("#createUserIdentityId").click(createUserIdentityClick)
-    $("#createAgentIdentityId").unbind('click');
     $("#createAgentIdentityId").click(createAgentIdentityClick)
-    $("#createTwinIdentityId").unbind('click');
     $("#createTwinIdentityId").click(createTwinIdentityClick)
+    $("#delegateControlId").click(delegateControlClick)
+
+    $("#getUserDocId").click(getUserDocClick)
+    $("#getAgentDocId").click(getAgentDocClick)
+    $("#getTwinDocId").click(getTwinDocClick)
 }
 
 function outputJSON(v) {
@@ -23,7 +24,7 @@ function outputJSON(v) {
     if (getType(v) == 'string') {
         o = JSON.parse(v)
     }
-    $("#output-text").html(JSON.stringify(o));
+    $("#output-text").html(JSON.stringify(o, "", 2));
 }
 
 async function createDefaultSeedClick() {
@@ -33,34 +34,75 @@ async function createDefaultSeedClick() {
     return false;
 }
 
+async function getUserDocClick() {
+    return getRegisteredDocByType("user")
+}
+
+async function getAgentDocClick() {
+    return getRegisteredDocByType("agent")
+}
+
+async function getTwinDocClick() {
+    return getRegisteredDocByType("twin")
+}
+
 async function createAgentIdentityClick() {
-    resolver = $("#resolverId").val()
-    agentName = $("#agentNameId").val()
-    agentKeyId = $("#agentKeyId").val()
-    seed = $("#seed").val()
-    json = await createAgentIdentity(resolver, agentKeyId, agentName, seed);
-    outputJSON(json)
-    return false;
+    return createIdentityClick(createAgentIdentity, "agent")
 }
 
 async function createUserIdentityClick() {
-    resolver = $("#resolverId").val()
-    agentName = $("#userNameId").val()
-    agentKeyId = $("#userKeyId").val()
-    seed = $("#seed").val()
-    json = await createUserIdentity(resolver, agentKeyId, agentName, seed);
-    outputJSON(json)
-    return false;
+    return createIdentityClick(createUserIdentity, "user")
 }
 
 async function createTwinIdentityClick() {
+    return createIdentityClick(createTwinIdentity, "twin")
+}
+
+async function getRegisteredDocByType(type) {
     resolver = $("#resolverId").val()
-    agentName = $("#twinNameId").val()
-    agentKeyId = $("#twinKeyId").val()
-    seed = $("#seed").val()
-    json = await createTwinIdentity(resolver, agentKeyId, agentName, seed);
-    outputJSON(json)
+    v = $("#" + type + "DidId").val()
+    json = await getRegisteredDocument(resolver, v);
+    jDoc = JSON.parse(json.doc)
+    outputJSON(jDoc)
     return false;
+}
+
+async function createIdentityClick(func, type) {
+    resolver = $("#resolverId").val()
+    json = await func(resolver, newCreateIdentityOpts(type));
+    outputJSON(json)
+    $("#" + type + "DidId").val(json.did)
+    return false;
+}
+
+async function delegateControlClick() {
+    resolver = $("#resolverId").val()
+    twinGetIdentityOpts = newGetIdentityOpts("twin")
+    agentGetIdentityOpts = newGetIdentityOpts("agent")
+    delegationName = "del-" + $("#twinNameId").val() + "-" + $("#agentNameId").val()
+    json = await delegateControl(resolver, twinGetIdentityOpts, agentGetIdentityOpts, delegationName)
+    outputJSON(json)
+    return false
+}
+
+function newCreateIdentityOpts(idType) {
+    return {
+        "seed": $("#seed").val(),
+        "key": $("#" + idType + "KeyId").val(),
+        "name": $("#" + idType + "NameId").val(),
+        "password": null,
+        "override": false
+    }
+}
+
+function newGetIdentityOpts(idType) {
+    return {
+        "seed": $("#seed").val(),
+        "key": $("#" + idType + "KeyId").val(),
+        "did": $("#" + idType + "DidId").val(),
+        "name": $("#" + idType + "NameId").val(),
+        "password": null,
+    }
 }
 
 function getType(p) {

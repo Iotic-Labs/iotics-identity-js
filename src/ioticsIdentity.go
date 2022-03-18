@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/url"
@@ -32,8 +33,8 @@ type apiError struct {
 
 func (ae *apiError) toJSON() map[string]interface{} {
 	return dict{
-		"error":     ae.err.Error(),
-		"mnemonics": ae.message,
+		"error":   ae.err.Error(),
+		"message": ae.message,
 	}
 }
 
@@ -64,6 +65,8 @@ func main() {
 	js.Global().Set("CreateAgentIdentity", js.FuncOf(CreateAgentIdentityP))
 	js.Global().Set("CreateUserIdentity", js.FuncOf(CreateUserIdentityP))
 	js.Global().Set("CreateTwinIdentity", js.FuncOf(CreateTwinIdentityP))
+	js.Global().Set("DelegateControl", js.FuncOf(DelegateControlP))
+	js.Global().Set("GetRegisteredDocument", js.FuncOf(GetRegisteredDocumentP))
 
 	println("IOTICS Identity WebAssembly initialised!")
 
@@ -84,7 +87,9 @@ func NewHandler(callback func(js.Value, []js.Value) (interface{}, *apiError), th
 				reject.Invoke(errorObject.toJSON())
 			} else {
 				// Resolve the Promise
+				jsLog(fmt.Sprintf("resolve"))
 				resolve.Invoke(result)
+				jsLog(fmt.Sprintf("resolved"))
 			}
 		}()
 
@@ -119,29 +124,75 @@ func createDefaultSeed(this js.Value, args []js.Value) (interface{}, *apiError) 
 
 }
 
-// func DelegateControl(this js.Value, args []js.Value) interface{} {
-// 	return NewHandler(delegateControl, this, args)
-// }
+func GetRegisteredDocumentP(this js.Value, args []js.Value) interface{} {
+	return NewHandler(getRegisteredDocument, this, args)
+}
 
-// func delegateControl(this js.Value, args []js.Value) (interface{}, *apiError) {
-// 	if len(args) != 4 {
-// 		return nil, NewApiError("required 4 arguments: resolverAddress, twinDiD, agentDiD, delegationName", errors.New("invalid argument"))
-// 	}
+func getRegisteredDocument(this js.Value, args []js.Value) (interface{}, *apiError) {
+	if len(args) != 2 {
+		return nil, NewApiError("required 2 arguments: resolverAddress, did", errors.New("invalid argument"))
+	}
 
-// 	addr, err := url.Parse(args[0].String())
-// 	if err != nil {
-// 		return nil, NewApiError("parsing resolver address failed", err)
-// 	}
+	addr, err := url.Parse(args[0].String())
+	if err != nil {
+		return nil, NewApiError("parsing resolver address failed", err)
+	}
+	resolverClient := register.NewDefaultRestResolverClient(addr)
 
-// 	twinDiD := args[1].String()
-// 	twinId, err = api.GetTwinIdentity(opts * api.GetIdentityOpts)
-// 	agentDiD := args[2].String()
-// 	delegationName := args[2].String()
+	doc, err := api.GetRegisteredDocument(resolverClient, args[1].String())
+	if err != nil {
+		return nil, NewApiError("unable to get registered document", err)
+	}
+	jDoc, err := json.Marshal(doc)
+	if err != nil {
+		return nil, NewApiError("unable to marshall document into json", err)
+	}
 
-// 	resolverClient := register.NewDefaultRestResolverClient(addr)
+	return dict{
+		"doc": string(jDoc),
+	}, nil
+}
 
-// 	err = api.DelegateControl(resolverClient, twinId, agentId, delegationName)
-// }
+func DelegateControlP(this js.Value, args []js.Value) interface{} {
+	return NewHandler(delegateControl, this, args)
+}
+
+func delegateControl(this js.Value, args []js.Value) (interface{}, *apiError) {
+	if len(args) != 4 {
+		return nil, NewApiError("required 4 arguments: resolverAddress, twinDiD, agentDiD, delegationName", errors.New("invalid argument"))
+	}
+
+	addr, err := url.Parse(args[0].String())
+	if err != nil {
+		return nil, NewApiError("parsing resolver address failed", err)
+	}
+
+	twinId, err := api.GetTwinIdentity(convertToGetIdentityOpts(args[1]))
+	if err != nil {
+		return nil, NewApiError("unable to get registered identity for twin", err)
+	}
+
+	agentId, err := api.GetTwinIdentity(convertToGetIdentityOpts(args[2]))
+	if err != nil {
+		return nil, NewApiError("unable to get registered identity for agent", err)
+	}
+
+	delegationName := args[3].String()
+
+	resolverClient := register.NewDefaultRestResolverClient(addr)
+
+	err = api.DelegateControl(resolverClient, twinId, agentId, delegationName)
+
+	if err != nil {
+		return nil, NewApiError("unable to delegate", err)
+	}
+
+	return dict{
+		"twinDid":        twinId.Did(),
+		"agentDid":       agentId.Did(),
+		"delegationName": delegationName,
+	}, nil
+}
 
 func CreateAgentIdentityP(this js.Value, args []js.Value) interface{} {
 	return NewHandler(createAgentIdentity, this, args)
@@ -168,61 +219,36 @@ func createTwinIdentity(this js.Value, args []js.Value) (interface{}, *apiError)
 }
 
 func createTypedIdentity(idType IdType, this js.Value, args []js.Value) (interface{}, *apiError) {
-	if len(args) != 4 {
-		return nil, NewApiError("required 4 arguments: resolverAddress, keyName, name, seed", errors.New("invalid argument"))
+	if len(args) != 2 {
+		return nil, NewApiError("required 2 arguments: resolverAddress, identityOpts", errors.New("invalid argument"))
 	}
 	cResolverAddress := args[0].String()
 	if len(cResolverAddress) == 0 {
 		return nil, NewApiError("invalid resolverAddress", errors.New("resolver address not a url"))
 	}
-	cKeyName := args[1].String()
-	if len(cKeyName) == 0 {
-		return nil, NewApiError("invalid key name", errors.New("empty key name"))
-	}
-	cName := args[2].String()
-	if len(cName) == 0 {
-		return nil, NewApiError("invalid name", errors.New("empty name"))
-	}
-	cSeed := args[3].String()
-	if len(cSeed) == 0 {
-		return nil, NewApiError("invalid seed", errors.New("empty seed"))
-	}
+	identityOpts := convertToCreateIdentityOpts(args[1])
 
-	return createIdentity(idType, cResolverAddress, cKeyName, cName, cSeed, false)
+	return createIdentity(idType, cResolverAddress, identityOpts)
 }
 
 func createIdentity(
 	idType IdType, // true for userId, false for agentId
 	resolverAddress string,
-	keyName string,
-	name string,
-	seed string,
-	override bool,
+	identityOpts *api.CreateIdentityOpts,
 ) (interface{}, *apiError) {
 	addr, err := url.Parse(resolverAddress)
 	if err != nil {
 		return nil, NewApiError("parsing resolver address failed", err)
 	}
 
-	seedBytes := base58.Decode(seed)
-
-	opts := &api.CreateIdentityOpts{
-		Seed:    seedBytes,
-		KeyName: keyName,
-		//Password: nil,
-		Name:     name,
-		Method:   crypto.SeedMethodBip39,
-		Override: override,
-	}
-
 	resolver := register.NewDefaultRestResolverClient(addr)
 	var id register.RegisteredIdentity
 	if idType == userIdType {
-		id, err = api.CreateUserIdentity(resolver, opts)
+		id, err = api.CreateUserIdentity(resolver, identityOpts)
 	} else if idType == agentIdType {
-		id, err = api.CreateAgentIdentity(resolver, opts)
+		id, err = api.CreateAgentIdentity(resolver, identityOpts)
 	} else {
-		id, err = api.CreateTwinIdentity(resolver, opts)
+		id, err = api.CreateTwinIdentity(resolver, identityOpts)
 	}
 
 	if err != nil {
@@ -239,4 +265,40 @@ func StoreValueInDOM(jsV js.Value, inputs []js.Value) interface{} {
 	h := js.Global().Get("document").Call("getElementById", "message")
 	h.Set("textContent", message)
 	return nil
+}
+
+func cast(in map[string]interface{}) map[string]string {
+	mapString := make(map[string]string)
+
+	for key, value := range in {
+		strKey := fmt.Sprintf("%v", key)
+		strValue := fmt.Sprintf("%v", value)
+
+		mapString[strKey] = strValue
+	}
+	return mapString
+}
+
+func convertToCreateIdentityOpts(sIdentityOpts js.Value) *api.CreateIdentityOpts {
+	return &api.CreateIdentityOpts{
+		Seed:     base58.Decode(sIdentityOpts.Get("seed").String()),
+		KeyName:  sIdentityOpts.Get("key").String(),
+		Password: sIdentityOpts.Get("password").String(),
+		Name:     sIdentityOpts.Get("name").String(),
+		Method:   crypto.SeedMethodBip39,
+		Override: sIdentityOpts.Get("override").Truthy(),
+	}
+
+}
+
+func convertToGetIdentityOpts(sIdentityOpts js.Value) *api.GetIdentityOpts {
+	return &api.GetIdentityOpts{
+		Seed:     base58.Decode(sIdentityOpts.Get("seed").String()),
+		Did:      sIdentityOpts.Get("did").String(),
+		KeyName:  sIdentityOpts.Get("key").String(),
+		Password: sIdentityOpts.Get("password").String(),
+		Name:     sIdentityOpts.Get("name").String(),
+		Method:   crypto.SeedMethodBip39,
+	}
+
 }
