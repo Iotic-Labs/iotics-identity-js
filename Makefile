@@ -14,6 +14,7 @@ wasm-init:
 
 wasm-build: wasm-clean wasm-init
 	@GOOS=js GOARCH=wasm go build -o $(WASM_OUT) $(LIB_GO)
+	@cp $(WASM_OUT) examples/browser
 
 build: clean wasm-build
 	@npm run build:browser

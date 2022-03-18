@@ -4,22 +4,23 @@ const WASM_URL = './ioticsIdentity.wasm';
 var wasm;
 
 function loadLib() {
+    let url = WASM_URL + "?ts=" + Date.now()
+    let requestHeaders = new Headers();
+    requestHeaders.append('pragma', 'no-cache');
+    requestHeaders.append('cache-control', 'no-cache');
+
+    let fetchParams = {
+        method: 'GET',
+        headers: requestHeaders,
+    };
     if ('instantiateStreaming' in WebAssembly) {
-        return WebAssembly.instantiateStreaming(fetch(WASM_URL), go.importObject).then(function (obj) {
+        return WebAssembly.instantiateStreaming(fetch(url, fetchParams), go.importObject).then(function (obj) {
             wasm = obj.instance;
             go.run(wasm);
         })
     } else {
-        var requestHeaders = new Headers();
-        requestHeaders.append('pragma', 'no-cache');
-        requestHeaders.append('cache-control', 'no-cache');
 
-        var fetchParams = {
-            method: 'GET',
-            headers: requestHeaders,
-        };
-
-        return fetch(WASM_URL + "?ts=" + Date.now(), fetchParams).then(resp =>
+        return fetch(url, fetchParams).then(resp =>
             resp.arrayBuffer()
         ).then(bytes =>
             WebAssembly.instantiate(bytes, go.importObject).then(function (obj) {
@@ -49,9 +50,16 @@ function loadLib() {
  * 
  * @returns JSON object
  */
-function createDefaultSeed() {
-    result = CreateDefaultSeed()
-    return JSON.parse(result)
+async function createDefaultSeed() {
+    try {
+        const response = await CreateDefaultSeed()
+        return JSON.parse(response)
+    } catch (err) {
+        return {
+            "error": err,
+            "message": "exception whilst creating seed"
+        }
+    }
 }
 
 /**

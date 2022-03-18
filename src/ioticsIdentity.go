@@ -1,12 +1,13 @@
 package main
 
 import (
-	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"net/url"
 	"syscall/js"
+
+	"github.com/btcsuite/btcutil/base58"
 
 	"github.com/Iotic-Labs/iotics-identity-go/pkg/api"
 	"github.com/Iotic-Labs/iotics-identity-go/pkg/crypto"
@@ -25,27 +26,23 @@ type dict = map[string]interface{}
 
 var c chan bool
 
-// init is called even before main is called.
-// This ensures that as soon as our WebAssembly module is ready in the browser,
-// it runs and prints "Hello, webAssembly!" to the console. It then proceeds
-// to create a new channel. The aim of this channel is to keep our Go app
-// running until we tell it to abort.
-func init() {
-	fmt.Println("IOTICS Identity WebAssembly initialising!")
-	c = make(chan bool)
+type apiError struct {
+	err     error
+	message string
 }
 
-func main() {
-	// here, we are simply declaring the our function `sayHelloJS` as a global JS function. That means we can call it just like any other JS function.
-	js.Global().Set("CreateDefaultSeed", js.FuncOf(CreateDefaultSeed))
-	js.Global().Set("CreateAgentIdentity", js.FuncOf(CreateAgentIdentity))
-	js.Global().Set("CreateUserIdentity", js.FuncOf(CreateUserIdentity))
-	js.Global().Set("CreateTwinIdentity", js.FuncOf(CreateTwinIdentity))
+func (ae *apiError) toJSON() string {
+	return dictToJSON(dict{
+		"error":     ae.err.Error(),
+		"mnemonics": ae.message,
+	})
+}
 
-	println("IOTICS Identity WebAssembly initialised!")
-
-	// tells the channel we created in init() to "stop".
-	<-c
+func NewApiError(message string, err error) *apiError {
+	return &apiError{
+		err:     err,
+		message: message,
+	}
 }
 
 func jsLog(s string) {
@@ -55,46 +52,135 @@ func jsLog(s string) {
 func dictToJSON(in dict) string {
 	ret, err := json.Marshal(in)
 	if err != nil {
-		return jsonError("unable to marshall map", err)
+		return NewApiError("unable to marshall map", err).toJSON()
 	}
 	return string(ret)
 }
 
-func jsonError(message string, err error) string {
-	return fmt.Sprintf("{ \"error\": \"%s\", \"message\": \"%s\" }", err.Error(), message)
+// init is called even before main is called.
+// This ensures that as soon as our WebAssembly module is ready in the browser,
+// it runs and prints "Hello, webAssembly!" to the console. It then proceeds
+// to create a new channel. The aim of this channel is to keep our Go app
+// running until we tell it to abort.
+func init() {
+	fmt.Println("IOTICS Identity WebAssembly initializing!")
+	c = make(chan bool)
 }
 
-func CreateDefaultSeed(this js.Value, args []js.Value) interface{} {
+func main() {
+	// here, we are simply declaring the our function `sayHelloJS` as a global JS function. That means we can call it just like any other JS function.
+	js.Global().Set("CreateDefaultSeed", js.FuncOf(CreateDefaultSeedP))
+	js.Global().Set("CreateAgentIdentity", js.FuncOf(CreateAgentIdentityP))
+	js.Global().Set("CreateUserIdentity", js.FuncOf(CreateUserIdentityP))
+	js.Global().Set("CreateTwinIdentity", js.FuncOf(CreateTwinIdentityP))
+
+	println("IOTICS Identity WebAssembly initialised!")
+
+	// tells the channel we created in init() to "stop".
+	<-c
+}
+
+// NewHandler
+// see https://withblue.ink/2020/10/03/go-webassembly-http-requests-and-promises.html
+func NewHandler(callback func(js.Value, []js.Value) (interface{}, *apiError), this js.Value, args []js.Value) interface{} {
+	handler := js.FuncOf(func(_ js.Value, promiseArgs []js.Value) interface{} {
+		resolve := promiseArgs[0]
+		reject := promiseArgs[1]
+		jsLog("new promise")
+
+		// Run this code asynchronously
+		go func() {
+			jsLog("about to invoke callback")
+			result, errorObject := callback(this, args)
+			if errorObject != nil {
+				jsLog("callback reject")
+				reject.Invoke(errorObject.toJSON())
+			} else {
+				jsLog(fmt.Sprintf("callback resolve %+v", result))
+				// Resolve the Promise
+				resolve.Invoke(result)
+			}
+		}()
+
+		// The handler of a Promise doesn't return any value
+		return nil
+	})
+
+	// Create and return the Promise object
+	promiseConstructor := js.Global().Get("Promise")
+	jsLog("new promise return")
+	return promiseConstructor.New(handler)
+}
+
+func CreateDefaultSeedP(this js.Value, args []js.Value) interface{} {
+	return NewHandler(createDefaultSeed, this, args)
+}
+
+func createDefaultSeed(this js.Value, args []js.Value) (interface{}, *apiError) {
 	res, err := api.CreateDefaultSeed()
 	if err != nil {
-		return jsonError("unable to create default seed", err)
+		return nil, NewApiError("unable to create default seed", err)
+	}
+	seed58 := base58.Encode(res)
+	mnemonics, err := crypto.SeedBip39ToMnemonic(res)
+	if err != nil {
+		return nil, NewApiError("unable to generate mnemonics", err)
 	}
 	j := dictToJSON(dict{
-		"seed": res,
+		"seed":      seed58,
+		"mnemonics": mnemonics,
 	})
-	return j
+
+	return j, nil
+
 }
 
-func CreateAgentIdentity(this js.Value, args []js.Value) interface{} {
+func CreateAgentIdentityP(this js.Value, args []js.Value) interface{} {
+	return NewHandler(createAgentIdentity, this, args)
+}
+
+func CreateUserIdentityP(this js.Value, args []js.Value) interface{} {
+	return NewHandler(createUserIdentity, this, args)
+}
+
+func CreateTwinIdentityP(this js.Value, args []js.Value) interface{} {
+	return NewHandler(createTwinIdentity, this, args)
+}
+
+func createAgentIdentity(this js.Value, args []js.Value) (interface{}, *apiError) {
 	return createTypedIdentity(agentIdType, this, args)
 }
 
-func CreateUserIdentity(this js.Value, args []js.Value) interface{} {
+func createUserIdentity(this js.Value, args []js.Value) (interface{}, *apiError) {
 	return createTypedIdentity(userIdType, this, args)
 }
 
-func CreateTwinIdentity(this js.Value, args []js.Value) interface{} {
+func createTwinIdentity(this js.Value, args []js.Value) (interface{}, *apiError) {
 	return createTypedIdentity(twinIdType, this, args)
 }
 
-func createTypedIdentity(idType IdType, this js.Value, args []js.Value) interface{} {
+func createTypedIdentity(idType IdType, this js.Value, args []js.Value) (interface{}, *apiError) {
 	if len(args) != 4 {
-		return jsonError("required 4 arguments: resolverAddress, keyName, name, seed", errors.New("invalid argument"))
+		return nil, NewApiError("required 4 arguments: resolverAddress, keyName, name, seed", errors.New("invalid argument"))
 	}
 	cResolverAddress := args[0].String()
 	cKeyName := args[1].String()
 	cName := args[2].String()
 	cSeed := args[3].String()
+
+	if len(cResolverAddress) == 0 {
+		return nil, NewApiError("invalid resolverAddress", errors.New("resolver address not a url"))
+	}
+	if len(cKeyName) == 0 {
+		return nil, NewApiError("invalid key name", errors.New("empty key name"))
+	}
+	if len(cName) == 0 {
+		return nil, NewApiError("invalid name", errors.New("empty name"))
+	}
+	if len(cSeed) == 0 {
+		return nil, NewApiError("invalid seed", errors.New("empty seed"))
+	}
+
 	return createIdentity(idType, cResolverAddress, cKeyName, cName, cSeed, false)
 }
 
@@ -105,16 +191,13 @@ func createIdentity(
 	name string,
 	seed string,
 	override bool,
-) interface{} {
-	jsLog("seed: '" + seed + "'")
-	seedBytes, err := hex.DecodeString(seed)
-	if err != nil {
-		return jsonError("failed to decode seed", err)
-	}
+) (interface{}, *apiError) {
 	addr, err := url.Parse(resolverAddress)
 	if err != nil {
-		return jsonError("parsing resolver address failed", err)
+		return nil, NewApiError("parsing resolver address failed", err)
 	}
+
+	seedBytes := base58.Decode(seed)
 
 	opts := &api.CreateIdentityOpts{
 		Seed:    seedBytes,
@@ -136,12 +219,12 @@ func createIdentity(
 	}
 
 	if err != nil {
-		return jsonError("unable to create identity", err)
+		return nil, NewApiError("unable to create identity", err)
 	}
 
 	return dictToJSON(dict{
 		"did": id.Did(),
-	})
+	}), nil
 }
 
 func StoreValueInDOM(jsV js.Value, inputs []js.Value) interface{} {

@@ -1,4 +1,4 @@
-const { loadLib, createDefaultSeed, createAgentIdentity } = ioticsIdentity;
+const { loadLib, createDefaultSeed, createAgentIdentity, createTwinIdentity, createUserIdentity } = ioticsIdentity;
 
 window.onload = function (e) {
     loadLib().then(() => {
@@ -8,41 +8,50 @@ window.onload = function (e) {
 };
 
 function initUi() {
-    $("#createDefaultSeedId").click(createDefaultSeedCallback)
-    $("#createUserIdentityId").click(createUserIdentityCallback)
-    $("#createAgentIdentityId").click(createAgentIdentityCallback)
-    $("#createTwinIdentityId").click(createTwinIdentityCallback)
+    $("#createDefaultSeedId").unbind('click');
+    $("#createDefaultSeedId").click(createDefaultSeedClick)
+    $("#createUserIdentityId").unbind('click');
+    $("#createUserIdentityId").click(createUserIdentityClick)
+    $("#createAgentIdentityId").unbind('click');
+    $("#createAgentIdentityId").click(createAgentIdentityClick)
+    $("#createTwinIdentityId").unbind('click');
+    $("#createTwinIdentityId").click(createTwinIdentityClick)
 }
 
-function createDefaultSeedCallback() {
-    json = createDefaultSeed();
-    $("#createDefaultSeedOutput").text(json.seed);
+async function createDefaultSeedClick() {
+    json = await createDefaultSeed();
+    $("#seed").val(json.seed)
+    $("#output-text").html(JSON.stringify(json));
+    return false;
 }
 
-function createAgentIdentityCallback() {
+function createAgentIdentityClick() {
     resolver = $("#resolverId").val()
     agentName = $("#agentNameId").val()
     agentKeyId = $("#agentKeyId").val()
-    seed = $("#createDefaultSeedOutput").val()
+    seed = $("#seed").val()
     json = createAgentIdentity(resolver, agentKeyId, agentName, seed);
-    $("#createAgentIdentityOutput").text(JSON.stringify(json));
+    $("#output-text").html(JSON.stringify(json));
+    return false;
 }
 
-function createUserIdentityCallback() {
+function createUserIdentityClick() {
     resolver = $("#resolverId").val()
     agentName = $("#userNameId").val()
     agentKeyId = $("#userKeyId").val()
-    seed = $("#createDefaultSeedOutput").val()
+    seed = $("#seed").val()
     json = createUserIdentity(resolver, agentKeyId, agentName, seed);
-    $("#createUserIdentityOutput").text(JSON.stringify(json));
+    $("#output-text").html(JSON.stringify(json));
+    return false;
 }
 
-function createTwinIdentityCallback() {
+function createTwinIdentityClick() {
     resolver = $("#resolverId").val()
     agentName = $("#twinNameId").val()
     agentKeyId = $("#twinKeyId").val()
-    seed = $("#createDefaultSeedOutput").val()
+    seed = $("#seed").val()
     json = createTwinIdentity(resolver, agentKeyId, agentName, seed);
-    $("#createTwinIdentityOutput").text(JSON.stringify(json));
+    $("#output-text").html(JSON.stringify(json));
+    return false;
 }
 

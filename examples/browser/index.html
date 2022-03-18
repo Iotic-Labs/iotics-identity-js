@@ -28,24 +28,36 @@
   <script src="./index.js"></script>
   <body>
     <div>
-      <label for="resolverId">The resolver address: </label>
-      <input id="resolverId" type="text" value="https://dev.did.iotics.com" />
+      <label for="seed">Seed: </label>
+      <input id="seed" type="text" size="50" value="" />
     </div>
     <div>
-      <label for="userNameId">The user name: </label>
+      <label for="resolverId">Resolver address: </label>
+      <input id="resolverId" type="text" value="https://did.stg.iotics.com" />
+    </div>
+    <div>
+      <label for="userNameId">User name: </label>
       <input id="userNameId" type="text" value="#user-0" />
     </div>
     <div>
-      <label for="userKeyId">The user key: </label>
+      <label for="userKeyId">User key: </label>
       <input id="userKeyId" type="text" value="user-key-0" />
     </div>
     <div>
-      <label for="agentNameId">The agent name: </label>
+      <label for="agentNameId">Agent name: </label>
       <input id="agentNameId" type="text" value="#agent-0" />
     </div>
     <div>
-      <label for="agentKeyId">The agent key: </label>
+      <label for="agentKeyId">Agent key: </label>
       <input id="agentKeyId" type="text" value="agent-key-0" />
+    </div>
+    <div>
+      <label for="twinNameId">Agent name: </label>
+      <input id="twinNameId" type="text" value="#twin-0" />
+    </div>
+    <div>
+      <label for="twinKeyId">Agent key: </label>
+      <input id="twinKeyId" type="text" value="twin-key-0" />
     </div>
     <br />
     <div>
@@ -55,10 +67,6 @@
         type="button"
         value="create default seed"
       />
-      <span
-        id="createDefaultSeedOutput"
-        class="font-family:garamond,serif"
-      ></span>
     </div>
     <div>
       <label for="createAgentIdentityId">Creates agent identity: </label>
@@ -66,7 +74,6 @@
         id="createAgentIdentityId"
         type="button"
         value="create agent identity"
-        onclick="createAgentIdentityCallback();"
       />
       <span
         id="createAgentIdentityOutput"
@@ -80,7 +87,6 @@
         id="createUserIdentityId"
         type="button"
         value="create user identity"
-        onclick="createUserIdentityCallback();"
       />
       <span
         id="createUserIdentityOutput"
@@ -94,12 +100,15 @@
         id="createTwinIdentityId"
         type="button"
         value="create twin identity"
-        onclick="createTwinIdentityCallback();"
       />
       <span
         id="createTwinIdentityOutput"
         class="font-family:garamond,serif"
       ></span>
+    </div>
+    <br />
+    <div id="output">
+      <span id="output-text"></span>
     </div>
   </body>
 </html>
