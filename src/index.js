@@ -102,7 +102,7 @@ function loadLib() {
 /**
  * Creates a 256 bits seed encoded base58
  * 
- * @returns Seed JSON or error JSON
+ * @returns Promise of: Seed | Error
  */
 function createDefaultSeed() {
     return CreateDefaultSeed()
@@ -113,7 +113,7 @@ function createDefaultSeed() {
  * 
  * @param {String} resolverAddress
  * @param {CreateIdentityOption} identityOpts
- * @returns DiD JSON or error JSON
+ * @returns Promise of: DiD JSON or error JSON
  */
 function createAgentIdentity(resolverAddress, identityOpts) {
     return CreateAgentIdentity(resolverAddress, identityOpts)
@@ -124,7 +124,7 @@ function createAgentIdentity(resolverAddress, identityOpts) {
  * 
  * @param {String} resolverAddress
  * @param {CreateIdentityOption} identityOpts
- * @returns DiD | Error
+ * @returns Promise of: DiD | Error
  */
 function createUserIdentity(resolverAddress, identityOpts) {
     return CreateUserIdentity(resolverAddress, identityOpts)
@@ -135,7 +135,7 @@ function createUserIdentity(resolverAddress, identityOpts) {
  *
  * @param {String} resolverAddress
  * @param {CreateIdentityOption} identityOpts
- * @returns DiD | Error
+ * @returns Promise of: DiD | Error
  */
 function createTwinIdentity(resolverAddress, identityOpts) {
     return CreateTwinIdentity(resolverAddress, identityOpts)
@@ -146,7 +146,7 @@ function createTwinIdentity(resolverAddress, identityOpts) {
  * 
  * @param {String} resolverAddress
  * @param {String} didId
- * @returns DiD | Error
+ * @returns Promise of: DiD | Error
  */
 function getRegisteredDocument(resolverAddress, didId) {
     return GetRegisteredDocument(resolverAddress, didId)
@@ -160,7 +160,7 @@ function getRegisteredDocument(resolverAddress, didId) {
  * @param {IdentityOptions} twinIdentityOpts 
  * @param {IdentityOptions} agentIdentityOpts 
  * @param {String} delegationName 
- * @returns DelegationData | Error
+ * @returns Promise of: DelegationData | Error
  */
 function delegateControl(resolverAddress, twinIdentityOpts, agentIdentityOpts, delegationName) {
     return DelegateControl(resolverAddress, twinIdentityOpts, agentIdentityOpts, delegationName)
@@ -173,7 +173,7 @@ function delegateControl(resolverAddress, twinIdentityOpts, agentIdentityOpts, d
  * @param {IdentityOptions} userIdentityOpts 
  * @param {IdentityOptions} agentIdentityOpts 
  * @param {String} delegationName 
- * @returns DelegationData | Error
+ * @returns Promise of: DelegationData | Error
  */
 function delegateAuthentication(resolverAddress, userIdentityOpts, agentIdentityOpts, delegationName) {
     return DelegateAuthentication(resolverAddress, userIdentityOpts, agentIdentityOpts, delegationName)
@@ -188,7 +188,7 @@ function delegateAuthentication(resolverAddress, userIdentityOpts, agentIdentity
  * @param {String} userDiD 
  * @param {Integer} durationMs 
  * @param {String} audience 
- * @returns Token | Error
+ * @returns Promise of: Token | Error
  */
 function createAgentAuthToken(agentIdentityOps, userDiD, durationMs, audience) {
     return CreateAgentAuthToken(agentIdentityOps, userDiD, durationMs, audience)

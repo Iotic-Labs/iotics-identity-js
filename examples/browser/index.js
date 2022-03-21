@@ -1,5 +1,8 @@
 const { loadLib, createDefaultSeed, createAgentIdentity, createTwinIdentity, createUserIdentity, delegateControl, delegateAuthentication, getRegisteredDocument, createAgentAuthToken } = ioticsIdentity;
 
+/**
+ * global loader - initialises the wasm and then the UI.
+ */
 window.onload = function (e) {
     loadLib().then(() => {
         console.log("wasm lib loaded");
@@ -29,6 +32,11 @@ function outputJSON(v) {
     $("#output-text").html(JSON.stringify(o, "", 2));
 }
 
+/**
+ * 
+ * @param {String} token 
+ * @returns the proof JSON
+ */
 function parseJwt(token) {
     var base64Url = token.split('.')[1];
     var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
