@@ -98,6 +98,10 @@ function delegateControl(resolverAddress, twinIdentityOpts, agentIdentityOpts, d
     return DelegateControl(resolverAddress, twinIdentityOpts, agentIdentityOpts, delegationName)
 }
 
+function delegateAuthentication(resolverAddress, userIdentityOpts, agentIdentityOpts, delegationName) {
+    return DelegateAuthentication(resolverAddress, userIdentityOpts, agentIdentityOpts, delegationName)
+}
+
 module.exports = {
     loadLib: () => loadLib(),
     createDefaultSeed: () => createDefaultSeed(),
@@ -106,5 +110,6 @@ module.exports = {
     createUserIdentity: (rAddr, identityOpts) => createUserIdentity(rAddr, identityOpts),
     createTwinIdentity: (rAddr, identityOpts) => createTwinIdentity(rAddr, identityOpts),
     delegateControl: (rAddr, twinIdentityOpts, agentIdentityOpts, delegationName) => delegateControl(rAddr, twinIdentityOpts, agentIdentityOpts, delegationName),
+    delegateAuthentication: (rAddr, userIdentityOpts, agentIdentityOpts, delegationName) => delegateAuthentication(rAddr, userIdentityOpts, agentIdentityOpts, delegationName),
     newIdentity: (seed, key, name, password, override) => newIdentity(seed, key, name, password, override),
 };

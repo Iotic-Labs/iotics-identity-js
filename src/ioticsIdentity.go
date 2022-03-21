@@ -22,6 +22,18 @@ const (
 	twinIdType
 )
 
+func (s IdType) String() string {
+	switch s {
+	case userIdType:
+		return "user"
+	case agentIdType:
+		return "agent"
+	case twinIdType:
+		return "twin"
+	}
+	return "unknown"
+}
+
 type dict = map[string]interface{}
 
 var c chan bool
@@ -66,6 +78,7 @@ func main() {
 	js.Global().Set("CreateUserIdentity", js.FuncOf(CreateUserIdentityP))
 	js.Global().Set("CreateTwinIdentity", js.FuncOf(CreateTwinIdentityP))
 	js.Global().Set("DelegateControl", js.FuncOf(DelegateControlP))
+	js.Global().Set("DelegateAuthentication", js.FuncOf(DelegateAuthenticationP))
 	js.Global().Set("GetRegisteredDocument", js.FuncOf(GetRegisteredDocumentP))
 
 	println("IOTICS Identity WebAssembly initialised!")
@@ -153,13 +166,29 @@ func getRegisteredDocument(this js.Value, args []js.Value) (interface{}, *apiErr
 	}, nil
 }
 
+func DelegateAuthenticationP(this js.Value, args []js.Value) interface{} {
+	return NewHandler(delegateAuthentication, this, args)
+}
+
+func delegateAuthentication(this js.Value, args []js.Value) (interface{}, *apiError) {
+	return delegateAuthenticationOrControl(this, args, userIdType)
+}
+
 func DelegateControlP(this js.Value, args []js.Value) interface{} {
 	return NewHandler(delegateControl, this, args)
 }
 
 func delegateControl(this js.Value, args []js.Value) (interface{}, *apiError) {
+	return delegateAuthenticationOrControl(this, args, twinIdType)
+}
+
+func delegateAuthenticationOrControl(this js.Value, args []js.Value, subjectType IdType) (interface{}, *apiError) {
+	if subjectType != userIdType && subjectType != twinIdType {
+		return nil, NewApiError(fmt.Sprintf("subject must be either user or twin", subjectType.String()), errors.New("invalid argument"))
+	}
+
 	if len(args) != 4 {
-		return nil, NewApiError("required 4 arguments: resolverAddress, twinDiD, agentDiD, delegationName", errors.New("invalid argument"))
+		return nil, NewApiError(fmt.Sprintf("required 4 arguments: resolverAddress, %sDiD, agentDiD, delegationName", subjectType.String()), errors.New("invalid argument"))
 	}
 
 	addr, err := url.Parse(args[0].String())
@@ -167,10 +196,15 @@ func delegateControl(this js.Value, args []js.Value) (interface{}, *apiError) {
 		return nil, NewApiError("parsing resolver address failed", err)
 	}
 
-	twinOpts := convertToGetIdentityOpts(args[1])
-	twinId, err := api.GetTwinIdentity(twinOpts)
+	subjectIdOpts := convertToGetIdentityOpts(args[1])
+	var subjectId register.RegisteredIdentity
+	if subjectType == userIdType {
+		subjectId, err = api.GetUserIdentity(subjectIdOpts)
+	} else if subjectType == twinIdType {
+		subjectId, err = api.GetTwinIdentity(subjectIdOpts)
+	}
 	if err != nil {
-		return nil, NewApiError("unable to get registered identity for twin", err)
+		return nil, NewApiError("unable to get registered identity for user", err)
 	}
 
 	agentOpts := convertToGetIdentityOpts(args[2])
@@ -183,16 +217,16 @@ func delegateControl(this js.Value, args []js.Value) (interface{}, *apiError) {
 
 	resolverClient := register.NewDefaultRestResolverClient(addr)
 
-	err = api.DelegateControl(resolverClient, twinId, agentId, delegationName)
+	err = api.DelegateControl(resolverClient, subjectId, agentId, delegationName)
 
 	if err != nil {
 		return nil, NewApiError("unable to delegate", err)
 	}
 
 	return dict{
-		"twinDid":        twinId.Did(),
-		"agentDid":       agentId.Did(),
-		"delegationName": delegationName,
+		fmt.Sprintf("%sDid", subjectType): subjectId.Did(),
+		"agentDid":                        agentId.Did(),
+		"delegationName":                  delegationName,
 	}, nil
 }
 

@@ -1,4 +1,4 @@
-const { loadLib, createDefaultSeed, createAgentIdentity, createTwinIdentity, createUserIdentity, delegateControl, getRegisteredDocument } = ioticsIdentity;
+const { loadLib, createDefaultSeed, createAgentIdentity, createTwinIdentity, createUserIdentity, delegateControl, delegateAuthentication, getRegisteredDocument } = ioticsIdentity;
 
 window.onload = function (e) {
     loadLib().then(() => {
@@ -12,6 +12,7 @@ function initUi() {
     $("#createUserIdentityId").click(createUserIdentityClick)
     $("#createAgentIdentityId").click(createAgentIdentityClick)
     $("#createTwinIdentityId").click(createTwinIdentityClick)
+    $("#delegateAuthenticationId").click(delegateAuthenticationClick)
     $("#delegateControlId").click(delegateControlClick)
 
     $("#getUserDocId").click(getUserDocClick)
@@ -81,6 +82,16 @@ async function delegateControlClick() {
     agentGetIdentityOpts = newGetIdentityOpts("agent")
     delegationName = $("#controlDelegationName").val()
     json = await delegateControl(resolver, twinGetIdentityOpts, agentGetIdentityOpts, delegationName)
+    outputJSON(json)
+    return false
+}
+
+async function delegateAuthenticationClick() {
+    resolver = $("#resolverId").val()
+    userGetIdentityOpts = newGetIdentityOpts("user")
+    agentGetIdentityOpts = newGetIdentityOpts("agent")
+    delegationName = $("#authenticationDelegationName").val()
+    json = await delegateAuthentication(resolver, userGetIdentityOpts, agentGetIdentityOpts, delegationName)
     outputJSON(json)
     return false
 }
