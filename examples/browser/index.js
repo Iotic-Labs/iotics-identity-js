@@ -1,4 +1,4 @@
-const { loadLib, createDefaultSeed, createAgentIdentity, createTwinIdentity, createUserIdentity, delegateControl, delegateAuthentication, getRegisteredDocument, createAgentAuthToken } = ioticsIdentity;
+const { loadLib, createDefaultSeed, createAgentIdentity, createTwinIdentity, createUserIdentity, delegateControl, delegateAuthentication, getRegisteredDocument, createAgentAuthToken, setIdentitiesCacheConfig } = ioticsIdentity;
 
 /**
  * global loader - initialises the wasm and then the UI.
@@ -18,6 +18,7 @@ function initUi() {
     $("#delegateAuthenticationId").click(delegateAuthenticationClick)
     $("#delegateControlId").click(delegateControlClick)
     $("#createAgentAuthTokenId").click(createAgentAuthTokenClick)
+    $("#setIdentitiesCacheConfigId").click(setIdentitiesCacheConfigClick)
 
     $("#getUserDocId").click(getUserDocClick)
     $("#getAgentDocId").click(getAgentDocClick)
@@ -67,6 +68,18 @@ async function createAgentAuthTokenClick() {
 async function createDefaultSeedClick() {
     json = await createDefaultSeed()
     $("#seed").val(json.seed)
+    outputJSON(json)
+    return false;
+}
+
+function setIdentitiesCacheConfigClick() {
+    ttl = $("#cacheTtl").val()
+    size = $("#cacheSize").val()
+    conf = {
+        "ttlSec": ttl,
+        "size": size,
+    }
+    json = setIdentitiesCacheConfig(conf)
     outputJSON(json)
     return false;
 }

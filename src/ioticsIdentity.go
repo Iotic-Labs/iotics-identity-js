@@ -144,10 +144,9 @@ func SetIdentitiesCacheConfig(this js.Value, args []js.Value) interface{} {
 	}
 
 	v := args[0]
-
 	a := v.Get("ttlSec")
-	if a.IsNull() {
-		ttlSec, err := strconv.ParseInt(a.String(), 10, 64)
+	if !a.IsNull() {
+		ttlSec, err := strconv.Atoi(a.String())
 		if err != nil {
 			return NewApiError("invalid integer: ttl (seconds)", err).toJSON()
 		}
@@ -159,8 +158,8 @@ func SetIdentitiesCacheConfig(this js.Value, args []js.Value) interface{} {
 	}
 
 	a = v.Get("size")
-	if a.IsNull() {
-		size, err := strconv.ParseInt(a.String(), 10, 64)
+	if !a.IsNull() {
+		size, err := strconv.Atoi(a.String())
 		if err != nil {
 			return NewApiError("invalid integer: size", err).toJSON()
 		}
@@ -170,7 +169,10 @@ func SetIdentitiesCacheConfig(this js.Value, args []js.Value) interface{} {
 
 		cacheAgentIdentities.SetCacheSizeLimit(int(size))
 	}
-	return nil
+
+	return dict{
+		"ok": true,
+	}
 }
 
 func CreateDefaultSeedP(this js.Value, args []js.Value) interface{} {
