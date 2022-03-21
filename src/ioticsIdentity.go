@@ -167,12 +167,14 @@ func delegateControl(this js.Value, args []js.Value) (interface{}, *apiError) {
 		return nil, NewApiError("parsing resolver address failed", err)
 	}
 
-	twinId, err := api.GetTwinIdentity(convertToGetIdentityOpts(args[1]))
+	twinOpts := convertToGetIdentityOpts(args[1])
+	twinId, err := api.GetTwinIdentity(twinOpts)
 	if err != nil {
 		return nil, NewApiError("unable to get registered identity for twin", err)
 	}
 
-	agentId, err := api.GetTwinIdentity(convertToGetIdentityOpts(args[2]))
+	agentOpts := convertToGetIdentityOpts(args[2])
+	agentId, err := api.GetTwinIdentity(agentOpts)
 	if err != nil {
 		return nil, NewApiError("unable to get registered identity for agent", err)
 	}
@@ -227,6 +229,8 @@ func createTypedIdentity(idType IdType, this js.Value, args []js.Value) (interfa
 		return nil, NewApiError("invalid resolverAddress", errors.New("resolver address not a url"))
 	}
 	identityOpts := convertToCreateIdentityOpts(args[1])
+
+	jsLog(fmt.Sprintf("%+v: %+v", idType, identityOpts))
 
 	return createIdentity(idType, cResolverAddress, identityOpts)
 }
