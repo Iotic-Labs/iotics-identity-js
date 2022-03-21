@@ -4,6 +4,7 @@ GOROOT := $(shell dirname $(GO_BIN))
 
 WASM_OUT=./dist/ioticsIdentity.wasm
 LIB_GO=./src/ioticsIdentity.go
+BROWSER_EXAMPLES_DIR=./examples/browser
 
 
 # since this is getting the file from the local machine, 
@@ -14,7 +15,7 @@ wasm-init:
 
 wasm-build: wasm-clean wasm-init
 	@GOOS=js GOARCH=wasm go build -o $(WASM_OUT) $(LIB_GO)
-	@cp $(WASM_OUT) examples/browser
+	@cp $(WASM_OUT) $(BROWSER_EXAMPLES_DIR)
 
 build: clean wasm-build
 	@npm run build:browser
@@ -24,3 +25,6 @@ wasm-clean:
 
 clean: wasm-clean
 	@rm -f ./dist/*
+
+serve:
+	@python3 -m http.server --directory $(BROWSER_EXAMPLES_DIR) 9090

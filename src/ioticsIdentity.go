@@ -174,7 +174,7 @@ func delegateControl(this js.Value, args []js.Value) (interface{}, *apiError) {
 	}
 
 	agentOpts := convertToGetIdentityOpts(args[2])
-	agentId, err := api.GetTwinIdentity(agentOpts)
+	agentId, err := api.GetAgentIdentity(agentOpts)
 	if err != nil {
 		return nil, NewApiError("unable to get registered identity for agent", err)
 	}

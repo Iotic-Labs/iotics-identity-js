@@ -79,7 +79,7 @@ async function delegateControlClick() {
     resolver = $("#resolverId").val()
     twinGetIdentityOpts = newGetIdentityOpts("twin")
     agentGetIdentityOpts = newGetIdentityOpts("agent")
-    delegationName = "#CDel_" + $("#twinKeyId").val() + "_" + $("#agentKeyId").val()
+    delegationName = $("#controlDelegationName").val()
     json = await delegateControl(resolver, twinGetIdentityOpts, agentGetIdentityOpts, delegationName)
     outputJSON(json)
     return false
