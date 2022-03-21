@@ -66,13 +66,17 @@ func jsLog(s string) {
 	js.Global().Get("console").Call("log", s)
 }
 
+func jsDebug(s string) {
+	js.Global().Get("console").Call("debug", s)
+}
+
 // init is called even before main is called.
 // This ensures that as soon as our WebAssembly module is ready in the browser,
 // it runs and prints "Hello, webAssembly!" to the console. It then proceeds
 // to create a new channel. The aim of this channel is to keep our Go app
 // running until we tell it to abort.
 func init() {
-	fmt.Println("IOTICS Identity WebAssembly initializing!")
+	jsLog("IOTICS Identity WebAssembly initializing!")
 	c = make(chan bool)
 	cacheAgentIdentities = ttlcache.NewCache()
 	// TODO: make it configurable
@@ -81,11 +85,11 @@ func init() {
 	cacheAgentIdentities.SetCacheSizeLimit(128)
 
 	newItemCallback := func(key string, value interface{}) {
-		jsLog(fmt.Sprintf("New key(%s) added\n", key))
+		jsDebug(fmt.Sprintf("New key(%s) added\n", key))
 	}
 	cacheAgentIdentities.SetNewItemCallback(newItemCallback)
 	expirationCallback := func(key string, reason ttlcache.EvictionReason, value interface{}) {
-		jsLog(fmt.Sprintf("This key(%s) has expired because of %s\n", key, reason))
+		jsDebug(fmt.Sprintf("This key(%s) has expired because of %s\n", key, reason))
 	}
 	cacheAgentIdentities.SetExpirationReasonCallback(expirationCallback)
 }
@@ -102,7 +106,7 @@ func main() {
 	js.Global().Set("GetRegisteredDocument", js.FuncOf(GetRegisteredDocumentP))
 	js.Global().Set("CreateAgentAuthToken", js.FuncOf(CreateAgentAuthTokenP))
 
-	println("IOTICS Identity WebAssembly initialised!")
+	jsLog("IOTICS Identity WebAssembly initialised!")
 
 	// tells the channel we created in init() to "stop".
 	<-c
@@ -142,7 +146,7 @@ func SetIdentitiesCacheConfig(this js.Value, args []js.Value) interface{} {
 	v := args[0]
 
 	a := v.Get("ttlSec")
-	if a != nil {
+	if a.IsNull() {
 		ttlSec, err := strconv.ParseInt(a.String(), 10, 64)
 		if err != nil {
 			return NewApiError("invalid integer: ttl (seconds)", err).toJSON()
@@ -155,7 +159,7 @@ func SetIdentitiesCacheConfig(this js.Value, args []js.Value) interface{} {
 	}
 
 	a = v.Get("size")
-	if a != nil {
+	if a.IsNull() {
 		size, err := strconv.ParseInt(a.String(), 10, 64)
 		if err != nil {
 			return NewApiError("invalid integer: size", err).toJSON()
