@@ -102,6 +102,12 @@ function delegateAuthentication(resolverAddress, userIdentityOpts, agentIdentity
     return DelegateAuthentication(resolverAddress, userIdentityOpts, agentIdentityOpts, delegationName)
 }
 
+function createAgentAuthToken(agentIdentityOps, userDiD, durationMs, audience) {
+    return CreateAgentAuthToken(agentIdentityOps, userDiD, durationMs, audience)
+}
+
+
+
 module.exports = {
     loadLib: () => loadLib(),
     createDefaultSeed: () => createDefaultSeed(),
@@ -112,4 +118,5 @@ module.exports = {
     delegateControl: (rAddr, twinIdentityOpts, agentIdentityOpts, delegationName) => delegateControl(rAddr, twinIdentityOpts, agentIdentityOpts, delegationName),
     delegateAuthentication: (rAddr, userIdentityOpts, agentIdentityOpts, delegationName) => delegateAuthentication(rAddr, userIdentityOpts, agentIdentityOpts, delegationName),
     newIdentity: (seed, key, name, password, override) => newIdentity(seed, key, name, password, override),
+    createAgentAuthToken: (agentIdentityOps, userDiD, durationMs, audience) => createAgentAuthToken(agentIdentityOps, userDiD, durationMs, audience)
 };

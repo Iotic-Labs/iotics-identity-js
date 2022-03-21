@@ -5,7 +5,9 @@ import (
 	"errors"
 	"fmt"
 	"net/url"
+	"strconv"
 	"syscall/js"
+	"time"
 
 	"github.com/btcsuite/btcutil/base58"
 
@@ -80,6 +82,7 @@ func main() {
 	js.Global().Set("DelegateControl", js.FuncOf(DelegateControlP))
 	js.Global().Set("DelegateAuthentication", js.FuncOf(DelegateAuthenticationP))
 	js.Global().Set("GetRegisteredDocument", js.FuncOf(GetRegisteredDocumentP))
+	js.Global().Set("CreateAgentAuthToken", js.FuncOf(CreateAgentAuthTokenP))
 
 	println("IOTICS Identity WebAssembly initialised!")
 
@@ -100,9 +103,7 @@ func NewHandler(callback func(js.Value, []js.Value) (interface{}, *apiError), th
 				reject.Invoke(errorObject.toJSON())
 			} else {
 				// Resolve the Promise
-				jsLog(fmt.Sprintf("resolve"))
 				resolve.Invoke(result)
-				jsLog(fmt.Sprintf("resolved"))
 			}
 		}()
 
@@ -163,6 +164,46 @@ func getRegisteredDocument(this js.Value, args []js.Value) (interface{}, *apiErr
 
 	return dict{
 		"doc": string(jDoc),
+	}, nil
+}
+
+func CreateAgentAuthTokenP(this js.Value, args []js.Value) interface{} {
+	return NewHandler(createAgentAuthToken, this, args)
+}
+
+func createAgentAuthToken(this js.Value, args []js.Value) (interface{}, *apiError) {
+
+	if len(args) != 4 {
+		return nil, NewApiError("required 4 arguments: agentDiD, userDiD, duration(ms), audience", errors.New("invalid argument"))
+	}
+
+	agentOpts := convertToGetIdentityOpts(args[0])
+	agentId, err := api.GetAgentIdentity(agentOpts)
+	if err != nil {
+		return nil, NewApiError("unable to get registered identity for agent", err)
+	}
+	userDiD := args[1].String()
+	durationMillisS := args[2].String()
+	durationMillis, err := strconv.ParseInt(durationMillisS, 10, 64)
+	if durationMillis < 1 {
+		return nil, NewApiError("invalid duration in millis - must be a positive integer", err)
+	}
+	durationMillisD := time.Duration(durationMillis) * time.Millisecond
+	audience := args[3].String()
+	token, err := api.CreateAgentAuthToken(agentId, userDiD, durationMillisD, audience)
+
+	if err != nil {
+		return nil, NewApiError("unable to generate token", err)
+	}
+
+	if err != nil {
+		return nil, NewApiError("unable to generate token", err)
+	}
+
+	tokenS := fmt.Sprintf("%+v", token)
+
+	return dict{
+		"token": tokenS,
 	}, nil
 }
 

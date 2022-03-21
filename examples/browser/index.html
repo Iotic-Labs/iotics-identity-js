@@ -154,8 +154,35 @@
               value="delegate control"
             />
           </div>
+          <br />
+          <div>
+            <label for="tokenAudience">token audience: </label>
+            <input
+              id="tokenAudience"
+              type="text"
+              value="https://your.iotics.space"
+            />
+            <br />
+            <label for="tokenDuration">token duration (ms): </label>
+            <input id="tokenDuration" type="text" value="1000" />
+            <br />
+            <label for="unpackToken">unpack token: </label>
+            <input id="unpackToken" type="checkbox" checked />
+            <input
+              id="createAgentAuthTokenId"
+              type="button"
+              value="create agent auth token"
+            />
+          </div>
         </div>
-        <div style="display: table-cell; background-color: #efefdf">
+        <div
+          style="
+            display: table-cell;
+            overflow: hidden;
+            overflow-wrap: break-word;
+            background-color: #efefdf;
+          "
+        >
           <div id="output">
             <pre id="output-text"></pre>
           </div>

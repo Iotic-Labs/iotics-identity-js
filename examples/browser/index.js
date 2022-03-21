@@ -1,4 +1,4 @@
-const { loadLib, createDefaultSeed, createAgentIdentity, createTwinIdentity, createUserIdentity, delegateControl, delegateAuthentication, getRegisteredDocument } = ioticsIdentity;
+const { loadLib, createDefaultSeed, createAgentIdentity, createTwinIdentity, createUserIdentity, delegateControl, delegateAuthentication, getRegisteredDocument, createAgentAuthToken } = ioticsIdentity;
 
 window.onload = function (e) {
     loadLib().then(() => {
@@ -14,6 +14,7 @@ function initUi() {
     $("#createTwinIdentityId").click(createTwinIdentityClick)
     $("#delegateAuthenticationId").click(delegateAuthenticationClick)
     $("#delegateControlId").click(delegateControlClick)
+    $("#createAgentAuthTokenId").click(createAgentAuthTokenClick)
 
     $("#getUserDocId").click(getUserDocClick)
     $("#getAgentDocId").click(getAgentDocClick)
@@ -26,6 +27,33 @@ function outputJSON(v) {
         o = JSON.parse(v)
     }
     $("#output-text").html(JSON.stringify(o, "", 2));
+}
+
+function parseJwt(token) {
+    var base64Url = token.split('.')[1];
+    var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    var jsonPayload = decodeURIComponent(atob(base64).split('').map(function (c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
+
+    return JSON.parse(jsonPayload);
+};
+
+async function createAgentAuthTokenClick() {
+    agentGetIdentityOpts = newGetIdentityOpts("agent")
+    userDiD = $("#userDidId").val()
+    durationMs = $("#tokenDuration").val()
+    audience = $("#tokenAudience").val()
+
+    json = await createAgentAuthToken(agentGetIdentityOpts, userDiD, durationMs, audience)
+
+
+    if ($("#unpackToken").prop("checked") == true) {
+        json = parseJwt(json.token)
+    }
+
+    outputJSON(json)
+    return false;
 }
 
 async function createDefaultSeedClick() {
