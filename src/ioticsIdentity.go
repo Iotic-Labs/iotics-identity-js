@@ -9,6 +9,7 @@ import (
 	"syscall/js"
 	"time"
 
+	"github.com/ReneKroon/ttlcache/v2"
 	"github.com/btcsuite/btcutil/base58"
 
 	"github.com/Iotic-Labs/iotics-identity-go/pkg/api"
@@ -39,6 +40,8 @@ func (s IdType) String() string {
 type dict = map[string]interface{}
 
 var c chan bool
+
+var cacheAgentIdentities *ttlcache.Cache
 
 type apiError struct {
 	err     error
@@ -71,10 +74,25 @@ func jsLog(s string) {
 func init() {
 	fmt.Println("IOTICS Identity WebAssembly initializing!")
 	c = make(chan bool)
+	cacheAgentIdentities = ttlcache.NewCache()
+	// TODO: make it configurable
+	agentCacheTTL := time.Second * 10
+	cacheAgentIdentities.SetTTL(time.Duration(agentCacheTTL))
+	cacheAgentIdentities.SetCacheSizeLimit(128)
+
+	newItemCallback := func(key string, value interface{}) {
+		jsLog(fmt.Sprintf("New key(%s) added\n", key))
+	}
+	cacheAgentIdentities.SetNewItemCallback(newItemCallback)
+	expirationCallback := func(key string, reason ttlcache.EvictionReason, value interface{}) {
+		jsLog(fmt.Sprintf("This key(%s) has expired because of %s\n", key, reason))
+	}
+	cacheAgentIdentities.SetExpirationReasonCallback(expirationCallback)
 }
 
 func main() {
 	// here, we are simply declaring the our function `sayHelloJS` as a global JS function. That means we can call it just like any other JS function.
+	js.Global().Set("SetIdentitiesCacheConfig", js.FuncOf(SetIdentitiesCacheConfig))
 	js.Global().Set("CreateDefaultSeed", js.FuncOf(CreateDefaultSeedP))
 	js.Global().Set("CreateAgentIdentity", js.FuncOf(CreateAgentIdentityP))
 	js.Global().Set("CreateUserIdentity", js.FuncOf(CreateUserIdentityP))
@@ -114,6 +132,41 @@ func NewHandler(callback func(js.Value, []js.Value) (interface{}, *apiError), th
 	// Create and return the Promise object
 	promiseConstructor := js.Global().Get("Promise")
 	return promiseConstructor.New(handler)
+}
+
+func SetIdentitiesCacheConfig(this js.Value, args []js.Value) interface{} {
+	if len(args) != 1 {
+		return NewApiError("required 1 argument: cache config", fmt.Errorf("invalid argument")).toJSON()
+	}
+
+	v := args[0]
+
+	a := v.Get("ttlSec")
+	if a != nil {
+		ttlSec, err := strconv.ParseInt(a.String(), 10, 64)
+		if err != nil {
+			return NewApiError("invalid integer: ttl (seconds)", err).toJSON()
+		}
+		if ttlSec < 1 {
+			return NewApiError("negative ttl", fmt.Errorf("invalid argument")).toJSON()
+		}
+
+		cacheAgentIdentities.SetTTL(time.Duration(ttlSec))
+	}
+
+	a = v.Get("size")
+	if a != nil {
+		size, err := strconv.ParseInt(a.String(), 10, 64)
+		if err != nil {
+			return NewApiError("invalid integer: size", err).toJSON()
+		}
+		if size < 1 {
+			return NewApiError("negative or empty size", fmt.Errorf("invalid argument")).toJSON()
+		}
+
+		cacheAgentIdentities.SetCacheSizeLimit(int(size))
+	}
+	return nil
 }
 
 func CreateDefaultSeedP(this js.Value, args []js.Value) interface{} {
@@ -178,7 +231,7 @@ func createAgentAuthToken(this js.Value, args []js.Value) (interface{}, *apiErro
 	}
 
 	agentOpts := convertToGetIdentityOpts(args[0])
-	agentId, err := api.GetAgentIdentity(agentOpts)
+	agentId, err := getCachedIdentity(agentIdType, agentOpts)
 	if err != nil {
 		return nil, NewApiError("unable to get registered identity for agent", err)
 	}
@@ -240,16 +293,16 @@ func delegateAuthenticationOrControl(this js.Value, args []js.Value, subjectType
 	subjectIdOpts := convertToGetIdentityOpts(args[1])
 	var subjectId register.RegisteredIdentity
 	if subjectType == userIdType {
-		subjectId, err = api.GetUserIdentity(subjectIdOpts)
+		subjectId, err = getCachedIdentity(userIdType, subjectIdOpts)
 	} else if subjectType == twinIdType {
-		subjectId, err = api.GetTwinIdentity(subjectIdOpts)
+		subjectId, err = getCachedIdentity(twinIdType, subjectIdOpts)
 	}
 	if err != nil {
 		return nil, NewApiError("unable to get registered identity for user", err)
 	}
 
 	agentOpts := convertToGetIdentityOpts(args[2])
-	agentId, err := api.GetAgentIdentity(agentOpts)
+	agentId, err := getCachedIdentity(agentIdType, agentOpts)
 	if err != nil {
 		return nil, NewApiError("unable to get registered identity for agent", err)
 	}
@@ -265,10 +318,37 @@ func delegateAuthenticationOrControl(this js.Value, args []js.Value, subjectType
 	}
 
 	return dict{
-		fmt.Sprintf("%sDid", subjectType): subjectId.Did(),
-		"agentDid":                        agentId.Did(),
-		"delegationName":                  delegationName,
+		"did":            subjectId.Did(),
+		"subjectType":    subjectType.String(),
+		"agentDid":       agentId.Did(),
+		"delegationName": delegationName,
 	}, nil
+}
+
+func getCachedIdentity(idType IdType, opts *api.GetIdentityOpts) (register.RegisteredIdentity, error) {
+	did := opts.Did
+	if value, exists := cacheAgentIdentities.Get(did); exists == nil {
+		return value.(register.RegisteredIdentity), nil
+	}
+	var err error
+	var identity register.RegisteredIdentity
+	if idType == agentIdType {
+		identity, err = api.GetAgentIdentity(opts)
+	} else if idType == userIdType {
+		identity, err = api.GetUserIdentity(opts)
+	} else if idType == twinIdType {
+		identity, err = api.GetTwinIdentity(opts)
+	} else {
+		return nil, fmt.Errorf("invalid identity type: %+v", idType)
+	}
+
+	if err != nil {
+		return nil, err
+	}
+	if err = cacheAgentIdentities.Set(did, identity); err != nil {
+		jsLog("Unable to cache element " + did)
+	}
+	return identity, nil
 }
 
 func CreateAgentIdentityP(this js.Value, args []js.Value) interface{} {
@@ -304,8 +384,6 @@ func createTypedIdentity(idType IdType, this js.Value, args []js.Value) (interfa
 		return nil, NewApiError("invalid resolverAddress", errors.New("resolver address not a url"))
 	}
 	identityOpts := convertToCreateIdentityOpts(args[1])
-
-	jsLog(fmt.Sprintf("%+v: %+v", idType, identityOpts))
 
 	return createIdentity(idType, cResolverAddress, identityOpts)
 }
