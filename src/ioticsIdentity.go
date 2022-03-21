@@ -339,13 +339,6 @@ func createIdentity(
 	}, nil
 }
 
-func StoreValueInDOM(jsV js.Value, inputs []js.Value) interface{} {
-	message := inputs[0].String()
-	h := js.Global().Get("document").Call("getElementById", "message")
-	h.Set("textContent", message)
-	return nil
-}
-
 func cast(in map[string]interface{}) map[string]string {
 	mapString := make(map[string]string)
 
