@@ -1,5 +1,6 @@
 const go = new Go(); // Defined in wasm_exec.js
 const WASM_URL = './ioticsIdentity.wasm';
+const { isNode } = require('browser-or-node');
 
 var wasm;
 
@@ -8,23 +9,28 @@ var wasm;
  * @returns 
  */
 function loadLib() {
-    let url = WASM_URL + "?ts=" + Date.now()
-    let requestHeaders = new Headers();
-    requestHeaders.append('pragma', 'no-cache');
-    requestHeaders.append('cache-control', 'no-cache');
+    let wasmBuffer
 
-    let fetchParams = {
-        method: 'GET',
-        headers: requestHeaders,
-    };
+    if (isNode) {
+        const { fs } = require('fs');
+        wasmBuffer = fs.readFileSync(WASM_URL);
+    } else {
+        wasmBuffer = fetch(WASM_URL + "?ts=" + Date.now(), {
+            method: 'GET',
+            headers: {
+                'pragma': 'no-cache',
+                'cache-control': 'no-cache',
+            },
+        })
+    }
+
     if ('instantiateStreaming' in WebAssembly) {
-        return WebAssembly.instantiateStreaming(fetch(url, fetchParams), go.importObject).then(function (obj) {
+        return WebAssembly.instantiateStreaming(wasmBuffer, go.importObject).then(function (obj) {
             wasm = obj.instance;
             go.run(wasm);
         })
     } else {
-
-        return fetch(url, fetchParams).then(resp =>
+        return wasmBuffer.then(resp =>
             resp.arrayBuffer()
         ).then(bytes =>
             WebAssembly.instantiate(bytes, go.importObject).then(function (obj) {

@@ -1,4 +1,4 @@
-let ioticsIdentity = require("./ioticsIdentity.js")
+const ioticsIdentity = require("./ioticsIdentity.js")
 
 ioticsIdentity.loadLib().then(() => {
     console.log("wasm lib loaded");

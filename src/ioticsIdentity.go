@@ -62,8 +62,8 @@ func NewApiError(message string, err error) *apiError {
 	}
 }
 
-func jsLog(s string) {
-	js.Global().Get("console").Call("log", s)
+func jsInfo(s string) {
+	js.Global().Get("console").Call("info", s)
 }
 
 func jsDebug(s string) {
@@ -76,7 +76,7 @@ func jsDebug(s string) {
 // to create a new channel. The aim of this channel is to keep our Go app
 // running until we tell it to abort.
 func init() {
-	jsLog("IOTICS Identity WebAssembly initializing!")
+	jsInfo("IOTICS Identity WebAssembly initializing!")
 	c = make(chan bool)
 	cacheAgentIdentities = ttlcache.NewCache()
 	// TODO: make it configurable
@@ -106,7 +106,7 @@ func main() {
 	js.Global().Set("GetRegisteredDocument", js.FuncOf(GetRegisteredDocumentP))
 	js.Global().Set("CreateAgentAuthToken", js.FuncOf(CreateAgentAuthTokenP))
 
-	jsLog("IOTICS Identity WebAssembly initialised!")
+	jsInfo("IOTICS Identity WebAssembly initialised!")
 
 	// tells the channel we created in init() to "stop".
 	<-c
@@ -352,7 +352,7 @@ func getCachedIdentity(idType IdType, opts *api.GetIdentityOpts) (register.Regis
 		return nil, err
 	}
 	if err = cacheAgentIdentities.Set(did, identity); err != nil {
-		jsLog("Unable to cache element " + did)
+		jsInfo("Unable to cache element " + did)
 	}
 	return identity, nil
 }
