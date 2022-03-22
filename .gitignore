@@ -8,5 +8,5 @@ dist/
 **/*.wasm
 node_modules/
 .nuxt
-**/ioticsIdentity.js
+**/ioticsIdentity*.js
 tmp/
