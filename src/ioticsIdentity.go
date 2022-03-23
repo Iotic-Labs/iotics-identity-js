@@ -98,11 +98,11 @@ func init() {
 	cacheAgentIdentities.SetCacheSizeLimit(128)
 
 	newItemCallback := func(key string, value interface{}) {
-		jsDebug(fmt.Sprintf("New key(%s) added\n", key))
+		//jsDebug(fmt.Sprintf("New key(%s) added\n", key))
 	}
 	cacheAgentIdentities.SetNewItemCallback(newItemCallback)
 	expirationCallback := func(key string, reason ttlcache.EvictionReason, value interface{}) {
-		jsDebug(fmt.Sprintf("This key(%s) has expired because of %s\n", key, reason))
+		//jsDebug(fmt.Sprintf("This key(%s) has expired because of %s\n", key, reason))
 	}
 	cacheAgentIdentities.SetExpirationReasonCallback(expirationCallback)
 
@@ -126,13 +126,17 @@ func init() {
 
 func main() {
 	// tells the channel we created in init() to "stop".
-	js.Global().Get("process").Call("on", "SIGTERM", js.FuncOf(func(js.Value, []js.Value) interface{} {
-		done <- true
-		return nil
-	}))
 
-	// necessary to unblock
-	js.Global().Call("startCb")
+	proc := js.Global().Get("process")
+	val := proc.Get("title")
+	if !val.IsNull() && val.String() == "node" {
+		proc.Call("on", "SIGTERM", js.FuncOf(func(js.Value, []js.Value) interface{} {
+			done <- true
+			return nil
+		}))
+		// this is defined in the node branch of index.js to callback when the initialisation is complete
+		js.Global().Call("startCb")
+	}
 
 	for {
 		select {
