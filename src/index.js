@@ -129,6 +129,13 @@ function loadLib() {
 //////////////
 
 /**
+ * terminates the wasm module
+ */
+function exitLib() {
+    return Exit()
+}
+
+/**
  * Creates a 256 bits seed encoded base58
  * 
  * @returns Promise of: Seed | Error
@@ -235,6 +242,7 @@ function setIdentitiesCacheConfig(conf) {
 
 module.exports = {
     loadLib: () => loadLib(),
+    exitLib: () => exitLib(),
     createDefaultSeed: () => createDefaultSeed(),
     setIdentitiesCacheConfig: (conf) => setIdentitiesCacheConfig(conf),
     getRegisteredDocument: (rAddr, didId) => getRegisteredDocument(rAddr, didId),

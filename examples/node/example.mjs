@@ -15,12 +15,10 @@
 */
 
 import pkg from './ioticsIdentityNode.js';
-const { loadLib } = pkg;
+const { loadLib, exitLib } = pkg;
 
-console.log("1")
-var foo = loadLib()
-console.log("2")
-console.log(foo)
-foo.then(() => {
+loadLib().then(() => {
     console.log("wasm lib loaded");
+    exitLib();
+    console.log("wasm lib terminated");
 });

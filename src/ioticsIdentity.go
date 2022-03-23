@@ -121,11 +121,23 @@ func main() {
 	js.Global().Set("DelegateAuthentication", js.FuncOf(DelegateAuthenticationP))
 	js.Global().Set("GetRegisteredDocument", js.FuncOf(GetRegisteredDocumentP))
 	js.Global().Set("CreateAgentAuthToken", js.FuncOf(CreateAgentAuthTokenP))
+	js.Global().Set("Exit", js.FuncOf(Exit))
 
 	jsInfo("IOTICS Identity WebAssembly initialised!")
 
 	// tells the channel we created in init() to "stop".
 	<-c
+}
+
+func Exit(this js.Value, args []js.Value) interface{} {
+	jsInfo("IOTICS Identity WebAssembly terminating!")
+	// unblocks the main method allowing this application to exit.
+	// useful in non-browser based applications
+	c <- true
+	jsInfo("IOTICS Identity WebAssembly terminated!")
+	return dict{
+		"ok": true,
+	}
 }
 
 // NewHandler
