@@ -1,0 +1,6 @@
+*/**/venv                                                                                           
+*/**/tmp                                                                                            
+*/**/__pycache__                                                                                    
+*/**/dist                                                                                           
+*/**/node_modules                                                                                   
+*/**/iotics.esp.*.egg-info
