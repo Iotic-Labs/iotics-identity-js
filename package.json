@@ -2,7 +2,6 @@
   "name": "iotics-identity-js",
   "version": "1.0.0",
   "description": "Iotics Identity SDK in JS",
-  "main": "dist/ioticsIdentity.js",
   "dependencies": {
     "browser-or-node": "^2.0.0",
     "buffer": "^6.0.3",
@@ -27,7 +26,7 @@
   },
   "scripts": {
     "build:browser": "webpack && cp ./dist/ioticsIdentityBrowser.js ./dist/ioticsIdentity.wasm ./examples/browser",
-    "build:node": "webpack && cp ./dist/ioticsIdentityNode.js ./dist/ioticsIdentity.wasm ./examples/node/ && node ./examples/node/example.js",
+    "build:node": "webpack && cp ./dist/ioticsIdentityNode.js ./dist/ioticsIdentity.wasm ./examples/node/ && node ./examples/node/example.mjs",
     "build": "webpack"
   },
   "repository": {

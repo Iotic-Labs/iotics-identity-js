@@ -32,8 +32,9 @@ const nodeConfig = {
     output: {
         path: path.resolve(__dirname, './dist'),
         filename: 'ioticsIdentityNode.js',
+        globalObject: 'this',
         libraryTarget: 'umd',
-        libraryExport: 'default',
+        // libraryExport: 'default',
     },
 };
 

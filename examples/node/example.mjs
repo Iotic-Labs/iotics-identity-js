@@ -14,8 +14,13 @@
     limitations under the License.
 */
 
-const ioticsIdentity = require("./ioticsIdentity.js")
+import pkg from './ioticsIdentityNode.js';
+const { loadLib } = pkg;
 
-ioticsIdentity.loadLib().then(() => {
+console.log("1")
+var foo = loadLib()
+console.log("2")
+console.log(foo)
+foo.then(() => {
     console.log("wasm lib loaded");
 });

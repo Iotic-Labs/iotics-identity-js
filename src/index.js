@@ -26,36 +26,42 @@ var wasm;
  * @returns 
  */
 function loadLib() {
-    let wasmBuffer
 
     if (isNode) {
-        const { fs } = require('fs');
-        wasmBuffer = fs.readFileSync(WASM_URL);
+        var fs = require('fs');
+        var path = require('path');
+        bytes = fs.readFileSync(path.join(__dirname, WASM_URL));
+
+        return WebAssembly.instantiate(bytes, go.importObject).then(function (obj) {
+            wasm = obj.instance;
+            go.run(wasm);
+        })
     } else {
-        wasmBuffer = fetch(WASM_URL + "?ts=" + Date.now(), {
+        let wasmBuffer = fetch(WASM_URL + "?ts=" + Date.now(), {
             method: 'GET',
             headers: {
                 'pragma': 'no-cache',
                 'cache-control': 'no-cache',
             },
         })
-    }
-
-    if ('instantiateStreaming' in WebAssembly) {
-        return WebAssembly.instantiateStreaming(wasmBuffer, go.importObject).then(function (obj) {
-            wasm = obj.instance;
-            go.run(wasm);
-        })
-    } else {
-        return wasmBuffer.then(resp =>
-            resp.arrayBuffer()
-        ).then(bytes =>
-            WebAssembly.instantiate(bytes, go.importObject).then(function (obj) {
+        if ('instantiateStreaming' in WebAssembly) {
+            return WebAssembly.instantiateStreaming(wasmBuffer, go.importObject).then(function (obj) {
                 wasm = obj.instance;
                 go.run(wasm);
             })
-        )
+        } else {
+            return wasmBuffer.then(resp =>
+                resp.arrayBuffer()
+            ).then(bytes =>
+                WebAssembly.instantiate(bytes, go.importObject).then(function (obj) {
+                    wasm = obj.instance;
+                    go.run(wasm);
+                })
+            )
+        }
+
     }
+
 }
 
 

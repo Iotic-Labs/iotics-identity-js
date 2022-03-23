@@ -13,29 +13,29 @@ NODE_EXAMPLES_DIR=./examples/node
 # since this is getting the file from the local machine, 
 # it'll be bound to the installed golang version
 $(DIST_DIR): 
-	mkdir -p $(DIST_DIR)
+	@mkdir -p $(DIST_DIR)
 
 $(WASM_EXEC_JS): $(DIST_DIR)
-	cp ${GOROOT}/misc/wasm/wasm_exec.js $(WASM_EXEC_JS)
+	@cp ${GOROOT}/misc/wasm/wasm_exec.js $(WASM_EXEC_JS)
 
 $(WASM_OUT): $(DIST_DIR)
-	GOOS=js GOARCH=wasm go build -o $(WASM_OUT) $(LIB_GO)
+	@GOOS=js GOARCH=wasm go build -o $(WASM_OUT) $(LIB_GO)
 
 
 .PHONY: clean build-wasm build-browser build-node build serve
 
 clean:
-	rm -rf $(DIST_DIR) $(WASM_EXEC_JS)
+	@rm -rf $(DIST_DIR) $(WASM_EXEC_JS)
 
 build-wasm: $(WASM_OUT) $(WASM_EXEC_JS)
-	cp $(WASM_OUT) $(BROWSER_EXAMPLES_DIR)
-	cp $(WASM_OUT) $(NODE_EXAMPLES_DIR)
+	@cp $(WASM_OUT) $(BROWSER_EXAMPLES_DIR)
+	@cp $(WASM_OUT) $(NODE_EXAMPLES_DIR)
 
 build-browser: build-wasm
-	npm run build:browser
+	@npm run build:browser
 	 
 build-node: build-wasm
-	npm run build:node
+	@npm run build:node
 
 build: clean build-browser build-node
 
