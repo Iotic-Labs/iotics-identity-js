@@ -25,7 +25,7 @@ $(WASM_OUT): $(DIST_DIR)
 .PHONY: clean build-wasm build-browser build-node build serve
 
 clean:
-	@rm -rf $(DIST_DIR) $(WASM_EXEC_JS)
+	@rm -rf $(DIST_DIR) $(WASM_EXEC_JS) $(BROWSER_EXAMPLES_DIR)/ioticsIdentity*.* $(NODE_EXAMPLES_DIR)/ioticsIdentity*.*
 
 build-wasm: $(WASM_OUT) $(WASM_EXEC_JS)
 	@cp $(WASM_OUT) $(BROWSER_EXAMPLES_DIR)
