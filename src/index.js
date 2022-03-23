@@ -17,25 +17,40 @@
 
 const go = new Go(); // Defined in wasm_exec.js
 const WASM_URL = './ioticsIdentity.wasm';
-const { isNode } = require('browser-or-node');
-
-var wasm;
 
 /**
  * Loads the underlying WASM library 
  * @returns 
  */
-function loadLib() {
+async function loadLib() {
 
-    if (isNode) {
+    const isNodeJS = global.process && global.process.title === "node";
+    if (isNodeJS) {
         var fs = require('fs');
         var path = require('path');
         bytes = fs.readFileSync(path.join(__dirname, WASM_URL));
 
+        global.startCb = () => {
+            console.log("IOTICS Identity functions available in the global namespace")
+        };
+
+        function delay(t, v) {
+            return new Promise(function (resolve) {
+                setTimeout(resolve.bind(null, v), t)
+            });
+        }
+
         return WebAssembly.instantiate(bytes, go.importObject).then(function (obj) {
-            wasm = obj.instance;
-            go.run(wasm);
+            go.run(obj.instance);
+        }).then(() => {
+            // turns out that the golang functions take a while to get published in the global namespace.
+            // for now we wait a bit before returning the promise so that we give it enough time
+            // in fact - it'll all be done once the startCb callback is invoked (this callback is called 
+            // by the golang code)
+            return delay(500)
         })
+
+
     } else {
         let wasmBuffer = fetch(WASM_URL + "?ts=" + Date.now(), {
             method: 'GET',
@@ -46,16 +61,14 @@ function loadLib() {
         })
         if ('instantiateStreaming' in WebAssembly) {
             return WebAssembly.instantiateStreaming(wasmBuffer, go.importObject).then(function (obj) {
-                wasm = obj.instance;
-                go.run(wasm);
+                go.run(obj.instance);
             })
         } else {
             return wasmBuffer.then(resp =>
                 resp.arrayBuffer()
             ).then(bytes =>
                 WebAssembly.instantiate(bytes, go.importObject).then(function (obj) {
-                    wasm = obj.instance;
-                    go.run(wasm);
+                    go.run(obj.instance);
                 })
             )
         }

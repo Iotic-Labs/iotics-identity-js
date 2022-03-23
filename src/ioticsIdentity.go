@@ -55,7 +55,7 @@ func (s IdType) String() string {
 
 type dict = map[string]interface{}
 
-var c chan bool
+var done chan bool
 
 var cacheAgentIdentities *ttlcache.Cache
 
@@ -88,12 +88,9 @@ func jsDebug(s string) {
 
 // init is called even before main is called.
 // This ensures that as soon as our WebAssembly module is ready in the browser,
-// it runs and prints "Hello, webAssembly!" to the console. It then proceeds
-// to create a new channel. The aim of this channel is to keep our Go app
-// running until we tell it to abort.
 func init() {
 	jsInfo("IOTICS Identity WebAssembly initializing!")
-	c = make(chan bool)
+	done = make(chan bool)
 	cacheAgentIdentities = ttlcache.NewCache()
 	// TODO: make it configurable
 	agentCacheTTL := time.Second * 10
@@ -108,10 +105,9 @@ func init() {
 		jsDebug(fmt.Sprintf("This key(%s) has expired because of %s\n", key, reason))
 	}
 	cacheAgentIdentities.SetExpirationReasonCallback(expirationCallback)
-}
 
-func main() {
-	// here, we are simply declaring the our function `sayHelloJS` as a global JS function. That means we can call it just like any other JS function.
+	// we have to declare our functions in an init func otherwise they aren't
+	// available in JS land at the call time.
 	js.Global().Set("SetIdentitiesCacheConfig", js.FuncOf(SetIdentitiesCacheConfig))
 	js.Global().Set("CreateDefaultSeed", js.FuncOf(CreateDefaultSeedP))
 	js.Global().Set("CreateAgentIdentity", js.FuncOf(CreateAgentIdentityP))
@@ -122,21 +118,46 @@ func main() {
 	js.Global().Set("GetRegisteredDocument", js.FuncOf(GetRegisteredDocumentP))
 	js.Global().Set("CreateAgentAuthToken", js.FuncOf(CreateAgentAuthTokenP))
 	js.Global().Set("Exit", js.FuncOf(Exit))
+	js.Global().Set("Ping", js.FuncOf(Ping))
 
 	jsInfo("IOTICS Identity WebAssembly initialised!")
 
+}
+
+func main() {
 	// tells the channel we created in init() to "stop".
-	<-c
+	js.Global().Get("process").Call("on", "SIGTERM", js.FuncOf(func(js.Value, []js.Value) interface{} {
+		done <- true
+		return nil
+	}))
+
+	// necessary to unblock
+	js.Global().Call("startCb")
+
+	for {
+		select {
+		case <-done:
+			return
+		default:
+			time.Sleep(500 * time.Millisecond)
+		}
+	}
 }
 
 func Exit(this js.Value, args []js.Value) interface{} {
 	jsInfo("IOTICS Identity WebAssembly terminating!")
 	// unblocks the main method allowing this application to exit.
 	// useful in non-browser based applications
-	c <- true
+	done <- true
 	jsInfo("IOTICS Identity WebAssembly terminated!")
 	return dict{
 		"ok": true,
+	}
+}
+
+func Ping(this js.Value, args []js.Value) interface{} {
+	return dict{
+		"result": "pong",
 	}
 }
 

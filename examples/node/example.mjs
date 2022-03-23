@@ -15,10 +15,72 @@
 */
 
 import pkg from './ioticsIdentityNode.js';
-const { loadLib, exitLib } = pkg;
+const {
+    loadLib,
+    createDefaultSeed,
+    getRegisteredDocument,
+    createAgentIdentity,
+    createUserIdentity,
+    createTwinIdentity,
+    delegateControl,
+    delegateAuthentication,
+    createAgentAuthToken
+} = pkg;
+
+const RESOLVER = "https://did.stg.iotics.com"
+const SEED = "EcnwYkUvCwZUrX4QbChrLXBuEc5qsVxMr5upX3VSsmgo"
+const USER_NAME = "#user-0"
+const AGENT_NAME = "#agent-0"
+const TWIN_NAME = "#twin-0"
+const USER_KEY = "#user-key-0"
+const AGENT_KEY = "#agent-key-0"
+const TWIN_KEY = "#twin-key-0"
+const AUDIENCE = "https://your.iotics.space"
+
+function newCreateIdentityOpts(idType) {
+    return {
+        "seed": $("#seed").val(),
+        "key": $("#" + idType + "KeyId").val(),
+        "name": $("#" + idType + "NameId").val(),
+        "password": null,
+        "override": false
+    }
+}
+
 
 loadLib().then(() => {
-    console.log("wasm lib loaded");
-    exitLib();
-    console.log("wasm lib terminated");
-});
+    createDefaultSeed().then((response) => console.log("seed: " + JSON.stringify(response)))
+
+    createAgentIdentity(RESOLVER, {
+        "seed": SEED,
+        "key": AGENT_KEY,
+        "name": AGENT_NAME,
+        "password": null,
+        "override": false
+    }).then((resp) => {
+        console.log("agent identity: " + resp)
+    }).catch((err) => console.error(err))
+
+    createUserIdentity(RESOLVER, {
+        "seed": SEED,
+        "key": USER_KEY,
+        "name": USER_NAME,
+        "password": null,
+        "override": false
+    }).then((resp) => {
+        console.log("user identity: " + resp)
+    }).catch((err) => console.error(err))
+
+    createTwinIdentity(RESOLVER, {
+        "seed": SEED,
+        "key": TWIN_KEY,
+        "name": TWIN_NAME,
+        "password": null,
+        "override": false
+    }).then((resp) => {
+        console.log("user identity: " + resp)
+    }).catch((err) => console.error(err))
+
+})
+
+
