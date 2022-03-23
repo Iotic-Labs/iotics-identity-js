@@ -17,8 +17,13 @@ wasm-build: wasm-clean wasm-init
 	@GOOS=js GOARCH=wasm go build -o $(WASM_OUT) $(LIB_GO)
 	@cp $(WASM_OUT) $(BROWSER_EXAMPLES_DIR)
 
-build: clean wasm-build
+build-browser: clean wasm-build
 	@npm run build:browser
+	 
+build-node: clean wasm-build
+	@npm run build:node
+
+build: build-browser #build-node
 	 
 wasm-clean: 
 	@rm -f $(WASM_OUT) ./src/wasm_exec.js
