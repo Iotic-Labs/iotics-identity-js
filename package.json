@@ -4,7 +4,16 @@
   "description": "Iotics Identity SDK in JS",
   "main": "dist/ioticsIdentity.js",
   "dependencies": {
-    "golang-wasm": "^0.1.0"
+    "buffer": "^6.0.3",
+    "console-browserify": "^1.2.0",
+    "crypto-browserify": "^3.12.0",
+    "fs": "0.0.1-security",
+    "golang-wasm": "^0.1.0",
+    "node-fetch": "^3.2.3",
+    "os-browserify": "^0.3.0",
+    "regenerator-runtime": "^0.13.9",
+    "stream-browserify": "^3.0.0",
+    "util": "^0.12.4"
   },
   "devDependencies": {
     "@babel/core": "^7.17.7",
@@ -14,8 +23,8 @@
     "webpack-cli": "^4.9.2"
   },
   "scripts": {
-    "build:browser": "webpack && cp dist/ioticsIdentity.js examples/browser",
-    "build:node": "webpack && cp dist/ioticsIdentity.js examples/node/ && node examples/node/example.js",
+    "build:browser": "webpack && cp dist/ioticsIdentity.js dist/main.wasm examples/browser",
+    "build:node": "webpack && cp dist/ioticsIdentity.js dist/main.wasm examples/node/ && node examples/node/example.js",
     "build": "webpack"
   },
   "repository": {
@@ -28,5 +37,10 @@
   "bugs": {
     "url": "https://github.com/Iotic-Labs/iotics-esp/issues"
   },
-  "homepage": "https://github.com/Iotic-Labs/iotics-esp#readme"
+  "homepage": "https://github.com/Iotic-Labs/iotics-esp#readme",
+  "browser": {
+    "fs": false,
+    "path": false,
+    "os": false
+  }
 }

@@ -9,7 +9,7 @@ LIB_GO=./src/main.go
 # since this is getting the file from the local machine, 
 # it'll be bound to the installed golang version
 wasm-init: 
-	@mkdir ./dist
+	@mkdir -p ./dist
 	@cp ${GOROOT}/misc/wasm/wasm_exec.js ./src
 
 build: clean wasm-init
