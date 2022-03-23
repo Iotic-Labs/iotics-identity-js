@@ -4,3 +4,7 @@
 */**/dist                                                                                           
 */**/node_modules                                                                                   
 */**/iotics.esp.*.egg-info
+dist/
+**/*.wasm
+node_modules/
+.nuxt
