@@ -101,10 +101,10 @@ The `loadLib` function loads the lib wasm. The `IoticsIdentity` object is the na
    "@context": "<string>",   
    "id":  "<string>",
    "ioticsSpecVersion": "<string>", 
-   "ioticsDIDType": "<string>",  // note: also known as Purpose
+   "ioticsDIDType": "<string>",
    "controller":  "<string>",
    "creator":  "<string>",
-   "updateTime":  "<number>", // milliseconds
+   "updateTime":  "<number>",
    "proof":  "<string>",
    "revoked":  "<boolean>",
    "authentication": "<array of RegisterPublicKey>",
@@ -144,7 +144,7 @@ The `loadLib` function loads the lib wasm. The `IoticsIdentity` object is the na
 "id": "<string>",
 "controller": "<string>",
 "proof": "<string>",
-"revoked": "<optional boolean>",`
+"revoked": "<optional boolean>",
 }
 ```
 
