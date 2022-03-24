@@ -97,10 +97,55 @@ The `loadLib` function loads the lib wasm. The `IoticsIdentity` object is the na
 `Document` The registered DiD document as described [here](https://github.com/Iotic-Labs/iotics-identity-go/blob/3ebc587960d15fa86ddb12c66dfbec711fec5e8a/pkg/register/document.go#L54)
 
 ```json
-
 {
+   "@context": "<string>",   
+   "id":  "<string>",
+   "ioticsSpecVersion": "<string>", 
+   "ioticsDIDType": "<string>",  // note: also known as Purpose
+   "controller":  "<string>",
+   "creator":  "<string>",
+   "updateTime":  "<number>", // milliseconds
+   "proof":  "<string>",
+   "revoked":  "<boolean>",
+   "authentication": "<array of RegisterPublicKey>",
+   "publicKey": "<array of RegisterPublicKey>",
+   "delegateAuthentication": "<array of RegisterDelegationProof>",
+   "delegateControl": "<array of RegisterDelegationProof>",
+   "metadata": "<Metadata>",
 }
 
+```
+
+`Metadata` optional structure in the DiD document
+
+```json
+{
+  "label": "<optional string>",
+  "comment": "<optional string>",
+  "url": "<optional string>",
+}
+```
+
+`RegisterPublicKey` structure for key used in authentication and publicKey in lists.
+
+```json
+{
+ "id": "<string>",
+ "type": "<string>",
+ "publicKeyBase58": "<string>",
+ "revoked": "<optional boolean>"
+}
+```
+
+`RegisterDelegationProof` structure on delegation.
+
+```json
+{
+"id": "<string>",
+"controller": "<string>",
+"proof": "<string>",
+"revoked": "<optional boolean>",`
+}
 ```
 
 `Seed` The object containing the seed
