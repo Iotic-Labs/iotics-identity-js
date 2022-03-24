@@ -40,4 +40,4 @@ build-node: build-wasm
 build: clean build-browser build-node
 
 serve:
-	@python3 -m http.server --directory $(BROWSER_EXAMPLES_DIR) 9090
+	@npx http-server -p 9090 -o $(BROWSER_EXAMPLES_DIR)
