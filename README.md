@@ -45,4 +45,3 @@ List of things that need to be done
 
 - https://medium.com/@jeantimex/create-a-javascript-library-and-fully-automate-the-releases-ccce93153dbb
 - https://github.com/golang/go/issues/29845
->>>>>>> 3712cae... added readme
