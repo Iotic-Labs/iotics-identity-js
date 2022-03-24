@@ -58,20 +58,19 @@ The `loadLib` function loads the lib wasm. The `IoticsIdentity` object is the na
 
 ### Objects
 
-Error object returned by the functions when an error occurs
+`Error` Error object returned by the functions when an error occurs
 
 ```json
-// Error
+
 {
   "error": "<value>",
   "message": "<value>",
 }
 ```
 
-Object used to retrieve an identity
+`GetIdentityOptions` Object used to retrieve an identity
 
 ```json
-// GetIdentityOptions
 {
    "seed": "<string>. base58 encoded>",
    "did": "<string>",
@@ -81,10 +80,10 @@ Object used to retrieve an identity
 }
 ```
 
-Object used to create an identity. The override flag is used to override any existing document in the resolver.
+`CreateIdentityOptions` Object used to create an identity. The override flag is used to override any existing document in the resolver.
 
-```json
-// CreateIdentityOptions 
+```json 
+
 {
    "seed": "<string>. base58 encoded>",
    "did": "<string>",
@@ -95,48 +94,52 @@ Object used to create an identity. The override flag is used to override any exi
 }
 ```
 
-The registered DiD document as described [here](https://github.com/Iotic-Labs/iotics-identity-go/blob/3ebc587960d15fa86ddb12c66dfbec711fec5e8a/pkg/register/document.go#L54)
+`Document` The registered DiD document as described [here](https://github.com/Iotic-Labs/iotics-identity-go/blob/3ebc587960d15fa86ddb12c66dfbec711fec5e8a/pkg/register/document.go#L54)
 
 ```json
-// Document
+
 {
 }
+
 ```
 
-The object containing the seed
+`Seed` The object containing the seed
 
 ```json
-// Seed 
+
 {
    "seed": "<string>. base58 encoded>",
 } 
+
 ```
 
-A DiD ID
+`DiD` A DiD ID
 
 ```json
-// DiD 
+
 {
   "did": "<string>"
 } 
+
 ```
 
-The data for the delegation that's been just created
+`DelegationData` The data for the delegation that's been just created
 
 ```json
-// DelegationData 
+
 {
  "did":            "<string>",
  "subjectType":    "<string. one of user, twin, agent>",
  "agentDid":       "<string>",
  "delegationName": "<string>", 
 } 
+
 ```
 
-Cache configuration object
+`CacheConfig` Cache configuration object
 
 ```json
-// CacheConfig 
+ 
 {
    "ttlSec": "<integer, default 10 seconds>",
    "size": "<integer, default 128>"
@@ -144,17 +147,16 @@ Cache configuration object
 
 ```
 
-Object containing a jwt token
+`Token` Object containing a jwt token
 
 ```json
-// Token
+
 {
   "token": "<jwt token string>"
 }
 ```
 
 The following functions are methods of the object `IoticsIdentity`:
-
 
 ```javascript
 /**
