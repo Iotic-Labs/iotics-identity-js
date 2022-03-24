@@ -1,8 +1,6 @@
 const path = require('path');
 const nodeExternals = require('webpack-node-externals');
 
-// https://levelup.gitconnected.com/how-to-bundle-your-library-for-both-nodejs-and-browser-with-webpack-3584ec8197eb
-
 const generalConfig = {
     entry: ['regenerator-runtime/runtime.js', './src/wasm_exec.js', './src/index.js'],
     mode: 'production',

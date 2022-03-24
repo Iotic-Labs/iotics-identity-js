@@ -41,11 +41,6 @@ List of things that need to be done
 
 1. The node examples are still buggy - golang wasm compiles net/http client using `fetch` so, in node `node-fetch` must be correctly installed and loaded.
 
-## References
-
-- https://medium.com/@jeantimex/create-a-javascript-library-and-fully-automate-the-releases-ccce93153dbb
-- https://github.com/golang/go/issues/29845
-
 ## How to use it: Javascript
 
 Import the library
@@ -297,3 +292,11 @@ function createAgentAuthToken(agentIdentityOps, userDiD, durationMs, audience)
 function setIdentitiesCacheConfig(conf)
 
 ```
+
+## References
+
+Thank you to:
+
+- https://medium.com/@jeantimex/create-a-javascript-library-and-fully-automate-the-releases-ccce93153dbb
+- https://github.com/golang/go/issues/29845
+- https://levelup.gitconnected.com/how-to-bundle-your-library-for-both-nodejs-and-browser-with-webpack-3584ec8197eb
