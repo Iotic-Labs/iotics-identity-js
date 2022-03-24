@@ -1,12 +1,6 @@
-*/**/venv                                                                                           
-*/**/tmp                                                                                            
-*/**/__pycache__                                                                                    
-*/**/dist                                                                                           
-*/**/node_modules                                                                                   
-*/**/iotics.esp.*.egg-info
-dist/
-**/*.wasm
-node_modules/
 .nuxt
+**/*.wasm
 **/ioticsIdentity*.js
+dist/
+node_modules/
 tmp/
