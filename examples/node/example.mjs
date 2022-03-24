@@ -16,6 +16,7 @@
 
 import pkg from './ioticsIdentityNode.js';
 const {
+    exitLib,
     loadLib,
     createDefaultSeed,
     getRegisteredDocument,
@@ -81,6 +82,7 @@ loadLib().then(() => {
         console.log("user identity: " + resp)
     }).catch((err) => console.error(err))
 
+    exitLib()
 })
 
 
