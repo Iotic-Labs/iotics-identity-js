@@ -1,4 +1,3 @@
-const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const path = require('path');
 const nodeExternals = require('webpack-node-externals');
 
@@ -11,12 +10,6 @@ const generalConfig = {
         aggregateTimeout: 600,
         ignored: /node_modules/,
     },
-    plugins: [
-        // new CleanWebpackPlugin({
-        // cleanStaleWebpackAssets: false,
-        //            cleanOnceBeforeBuildPatterns: [path.resolve(__dirname, './dist')],
-        // }),
-    ],
     module: {
         rules: [{
             test: /\.js$/,
