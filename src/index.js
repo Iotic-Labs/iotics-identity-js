@@ -18,6 +18,10 @@
 const go = new Go(); // Defined in wasm_exec.js
 const WASM_URL = './ioticsIdentity.wasm';
 
+var IoticsIdentity = {
+
+}
+
 /**
  * Loads the underlying WASM library 
  * @returns 
@@ -254,15 +258,6 @@ function setIdentitiesCacheConfig(conf) {
 }
 
 module.exports = {
-    loadLib: () => loadLib(),
-    exitLib: () => exitLib(),
-    createDefaultSeed: () => createDefaultSeed(),
-    setIdentitiesCacheConfig: (conf) => setIdentitiesCacheConfig(conf),
-    getRegisteredDocument: (rAddr, didId) => getRegisteredDocument(rAddr, didId),
-    createAgentIdentity: (rAddr, identityOpts) => createAgentIdentity(rAddr, identityOpts),
-    createUserIdentity: (rAddr, identityOpts) => createUserIdentity(rAddr, identityOpts),
-    createTwinIdentity: (rAddr, identityOpts) => createTwinIdentity(rAddr, identityOpts),
-    delegateControl: (rAddr, twinIdentityOpts, agentIdentityOpts, delegationName) => delegateControl(rAddr, twinIdentityOpts, agentIdentityOpts, delegationName),
-    delegateAuthentication: (rAddr, userIdentityOpts, agentIdentityOpts, delegationName) => delegateAuthentication(rAddr, userIdentityOpts, agentIdentityOpts, delegationName),
-    createAgentAuthToken: (agentIdentityOps, userDiD, durationMs, audience) => createAgentAuthToken(agentIdentityOps, userDiD, durationMs, audience)
+    IoticsIdentity: IoticsIdentity,
+    loadLib: () => loadLib()
 };

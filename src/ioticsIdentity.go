@@ -108,29 +108,53 @@ func init() {
 
 	// we have to declare our functions in an init func otherwise they aren't
 	// available in JS land at the call time.
-	js.Global().Set("SetIdentitiesCacheConfig", js.FuncOf(SetIdentitiesCacheConfig))
-	js.Global().Set("CreateDefaultSeed", js.FuncOf(CreateDefaultSeedP))
-	js.Global().Set("CreateAgentIdentity", js.FuncOf(CreateAgentIdentityP))
-	js.Global().Set("CreateUserIdentity", js.FuncOf(CreateUserIdentityP))
-	js.Global().Set("CreateTwinIdentity", js.FuncOf(CreateTwinIdentityP))
-	js.Global().Set("DelegateControl", js.FuncOf(DelegateControlP))
-	js.Global().Set("DelegateAuthentication", js.FuncOf(DelegateAuthenticationP))
-	js.Global().Set("GetRegisteredDocument", js.FuncOf(GetRegisteredDocumentP))
-	js.Global().Set("CreateAgentAuthToken", js.FuncOf(CreateAgentAuthTokenP))
-	js.Global().Set("Exit", js.FuncOf(Exit))
-	js.Global().Set("Ping", js.FuncOf(Ping))
+
+	var lib = js.Global().Get("ioticsIdentityBrowser")
+	if lib.IsNull() {
+		lib = js.Global().Get("ioticsIdentityNode")
+	}
+	if lib.IsNull() {
+		lib = js.Global().Get("ioticsIdentity")
+	}
+	if lib.IsNull() {
+		jsInfo("Your module should be exported as ioticsIdentityBrowser or ioticsIdentityNode!")
+		panic("IOTICS Identity WebAssembly NOT initialised!")
+	}
+	e := "browser"
+	if isNode() {
+		e = "node"
+	}
+	jsInfo(fmt.Sprintf("Environment detected: %+v", e))
+
+	var id = lib.Get("IoticsIdentity")
+
+	id.Set("setIdentitiesCacheConfig", js.FuncOf(SetIdentitiesCacheConfig))
+	id.Set("createDefaultSeed", js.FuncOf(CreateDefaultSeedP))
+	id.Set("createAgentIdentity", js.FuncOf(CreateAgentIdentityP))
+	id.Set("createUserIdentity", js.FuncOf(CreateUserIdentityP))
+	id.Set("createTwinIdentity", js.FuncOf(CreateTwinIdentityP))
+	id.Set("delegateControl", js.FuncOf(DelegateControlP))
+	id.Set("delegateAuthentication", js.FuncOf(DelegateAuthenticationP))
+	id.Set("getRegisteredDocument", js.FuncOf(GetRegisteredDocumentP))
+	id.Set("createAgentAuthToken", js.FuncOf(CreateAgentAuthTokenP))
+	id.Set("exit", js.FuncOf(Exit))
+	id.Set("ping", js.FuncOf(Ping))
 
 	jsInfo("IOTICS Identity WebAssembly initialised!")
 
 }
 
+func isNode() bool {
+	proc := js.Global().Get("process")
+	val := proc.Get("title")
+	return !val.IsNull() && val.String() == "node"
+}
+
 func main() {
 	// tells the channel we created in init() to "stop".
 
-	proc := js.Global().Get("process")
-	val := proc.Get("title")
-	if !val.IsNull() && val.String() == "node" {
-		proc.Call("on", "SIGTERM", js.FuncOf(func(js.Value, []js.Value) interface{} {
+	if isNode() {
+		js.Global().Get("process").Call("on", "SIGTERM", js.FuncOf(func(js.Value, []js.Value) interface{} {
 			done <- true
 			return nil
 		}))

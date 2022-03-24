@@ -14,7 +14,7 @@
     limitations under the License.
 */
 
-const { loadLib, createDefaultSeed, createAgentIdentity, createTwinIdentity, createUserIdentity, delegateControl, delegateAuthentication, getRegisteredDocument, createAgentAuthToken, setIdentitiesCacheConfig } = ioticsIdentityBrowser;
+const { IoticsIdentity, loadLib } = ioticsIdentityBrowser;
 
 /**
  * global loader - initialises the wasm and then the UI.
@@ -70,7 +70,7 @@ async function createAgentAuthTokenClick() {
     durationMs = $("#tokenDuration").val()
     audience = $("#tokenAudience").val()
 
-    json = await createAgentAuthToken(agentGetIdentityOpts, userDiD, durationMs, audience)
+    json = await IoticsIdentity.createAgentAuthToken(agentGetIdentityOpts, userDiD, durationMs, audience)
 
 
     if ($("#unpackToken").prop("checked") == true) {
@@ -82,7 +82,7 @@ async function createAgentAuthTokenClick() {
 }
 
 async function createDefaultSeedClick() {
-    json = await createDefaultSeed()
+    json = await IoticsIdentity.createDefaultSeed()
     $("#seed").val(json.seed)
     outputJSON(json)
     return false;
@@ -95,7 +95,7 @@ function setIdentitiesCacheConfigClick() {
         "ttlSec": ttl,
         "size": size,
     }
-    json = setIdentitiesCacheConfig(conf)
+    json = IoticsIdentity.setIdentitiesCacheConfig(conf)
     outputJSON(json)
     return false;
 }
@@ -113,21 +113,21 @@ async function getTwinDocClick() {
 }
 
 async function createAgentIdentityClick() {
-    return createIdentityClick(createAgentIdentity, "agent")
+    return createIdentityClick(IoticsIdentity.createAgentIdentity, "agent")
 }
 
 async function createUserIdentityClick() {
-    return createIdentityClick(createUserIdentity, "user")
+    return createIdentityClick(IoticsIdentity.createUserIdentity, "user")
 }
 
 async function createTwinIdentityClick() {
-    return createIdentityClick(createTwinIdentity, "twin")
+    return createIdentityClick(IoticsIdentity.createTwinIdentity, "twin")
 }
 
 async function getRegisteredDocByType(type) {
     resolver = $("#resolverId").val()
     v = $("#" + type + "DidId").val()
-    json = await getRegisteredDocument(resolver, v);
+    json = await IoticsIdentity.getRegisteredDocument(resolver, v);
     jDoc = JSON.parse(json.doc)
     outputJSON(jDoc)
     return false;
@@ -146,7 +146,7 @@ async function delegateControlClick() {
     twinGetIdentityOpts = newGetIdentityOpts("twin")
     agentGetIdentityOpts = newGetIdentityOpts("agent")
     delegationName = $("#controlDelegationName").val()
-    json = await delegateControl(resolver, twinGetIdentityOpts, agentGetIdentityOpts, delegationName)
+    json = await IoticsIdentity.delegateControl(resolver, twinGetIdentityOpts, agentGetIdentityOpts, delegationName)
     outputJSON(json)
     return false
 }
@@ -156,7 +156,7 @@ async function delegateAuthenticationClick() {
     userGetIdentityOpts = newGetIdentityOpts("user")
     agentGetIdentityOpts = newGetIdentityOpts("agent")
     delegationName = $("#authenticationDelegationName").val()
-    json = await delegateAuthentication(resolver, userGetIdentityOpts, agentGetIdentityOpts, delegationName)
+    json = await IoticsIdentity.delegateAuthentication(resolver, userGetIdentityOpts, agentGetIdentityOpts, delegationName)
     outputJSON(json)
     return false
 }
