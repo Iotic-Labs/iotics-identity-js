@@ -4,3 +4,4 @@
 dist/
 node_modules/
 tmp/
+*/**/wasm_exec.js
