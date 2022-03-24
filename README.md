@@ -61,7 +61,7 @@ The `loadLib` function loads the lib wasm. The `IoticsIdentity` object is the na
 Error object returned by the functions when an error occurs
 
 ```json
-Error
+// Error
 {
   "error": "<value>",
   "message": "<value>",
@@ -71,7 +71,7 @@ Error
 Object used to retrieve an identity
 
 ```json
-GetIdentityOptions
+// GetIdentityOptions
 {
    "seed": "<string>. base58 encoded>",
    "did": "<string>",
@@ -84,7 +84,7 @@ GetIdentityOptions
 Object used to create an identity. The override flag is used to override any existing document in the resolver.
 
 ```json
-CreateIdentityOptions 
+// CreateIdentityOptions 
 {
    "seed": "<string>. base58 encoded>",
    "did": "<string>",
@@ -98,7 +98,7 @@ CreateIdentityOptions
 The registered DiD document as described [here](https://github.com/Iotic-Labs/iotics-identity-go/blob/3ebc587960d15fa86ddb12c66dfbec711fec5e8a/pkg/register/document.go#L54)
 
 ```json
-Document:
+// Document
 {
 }
 ```
@@ -106,7 +106,7 @@ Document:
 The object containing the seed
 
 ```json
-Seed 
+// Seed 
 {
    "seed": "<string>. base58 encoded>",
 } 
@@ -115,7 +115,7 @@ Seed
 A DiD ID
 
 ```json
-DiD 
+// DiD 
 {
   "did": "<string>"
 } 
@@ -124,7 +124,7 @@ DiD
 The data for the delegation that's been just created
 
 ```json
-DelegationData 
+// DelegationData 
 {
  "did":            "<string>",
  "subjectType":    "<string. one of user, twin, agent>",
@@ -136,7 +136,7 @@ DelegationData
 Cache configuration object
 
 ```json
-CacheConfig 
+// CacheConfig 
 {
    "ttlSec": "<integer, default 10 seconds>",
    "size": "<integer, default 128>"
@@ -147,7 +147,7 @@ CacheConfig
 Object containing a jwt token
 
 ```json
-Token
+// Token
 {
   "token": "<jwt token string>"
 }
