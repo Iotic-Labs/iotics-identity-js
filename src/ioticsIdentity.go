@@ -109,13 +109,7 @@ func init() {
 	// we have to declare our functions in an init func otherwise they aren't
 	// available in JS land at the call time.
 
-	var lib = js.Global().Get("ioticsIdentityBrowser")
-	if lib.IsNull() {
-		lib = js.Global().Get("ioticsIdentityNode")
-	}
-	if lib.IsNull() {
-		lib = js.Global().Get("ioticsIdentity")
-	}
+	lib := js.Global().Get("ioticsIdentity")
 	if lib.IsNull() {
 		jsInfo("Your module should be exported as ioticsIdentityBrowser or ioticsIdentityNode!")
 		panic("IOTICS Identity WebAssembly NOT initialised!")

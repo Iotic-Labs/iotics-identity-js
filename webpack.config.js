@@ -21,21 +21,24 @@ const nodeConfig = {
     target: 'node',
     externals: [nodeExternals()],
     output: {
-        path: path.resolve(__dirname, './dist'),
-        filename: 'ioticsIdentityNode.js',
+        path: path.resolve(__dirname, './dist/nodejs'),
+        filename: 'ioticsIdentity.js',
         globalObject: 'this',
         libraryTarget: 'umd',
         // libraryExport: 'default',
     },
+    optimization: {
+        minimize: false
+    }
 };
 
 const browserConfig = {
     entry: './src/index.js',
     target: 'web',
     output: {
-        path: path.resolve(__dirname, './dist'),
-        filename: 'ioticsIdentityBrowser.js',
-        library: 'ioticsIdentityBrowser',
+        path: path.resolve(__dirname, './dist/browser'),
+        filename: 'ioticsIdentity.js',
+        library: 'ioticsIdentity',
         libraryTarget: 'umd',
         globalObject: 'this',
         umdNamedDefine: true,
@@ -58,7 +61,6 @@ module.exports = (env, argv) => {
         generalConfig.devtool = 'cheap-module-source-map';
     }
     // else if (argv.mode === 'production') {
-
     Object.assign(nodeConfig, generalConfig);
     Object.assign(browserConfig, generalConfig);
 

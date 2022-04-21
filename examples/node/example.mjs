@@ -14,7 +14,8 @@
     limitations under the License.
 */
 
-import pkg from './ioticsIdentityNode.js';
+import pkg from './ioticsIdentity.js';
+
 const {
     exitLib,
     loadLib,

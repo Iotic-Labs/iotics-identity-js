@@ -14,7 +14,7 @@
     limitations under the License.
 */
 
-const { IoticsIdentity, loadLib } = ioticsIdentityBrowser;
+const { IoticsIdentity, loadLib } = ioticsIdentity;
 
 /**
  * global loader - initialises the wasm and then the UI.

@@ -46,7 +46,7 @@ List of things that need to be done
 Import the library
 
 ```javascript
-const { IoticsIdentity, loadLib } = ioticsIdentityBrowser;
+const { IoticsIdentity, loadLib } = ioticsIdentity;
 ```
 
 The `loadLib` function loads the lib wasm. The `IoticsIdentity` object is the namespace of the functions of the library.
@@ -77,7 +77,7 @@ The `loadLib` function loads the lib wasm. The `IoticsIdentity` object is the na
 
 `CreateIdentityOptions` Object used to create an identity. The override flag is used to override any existing document in the resolver.
 
-```json 
+```json
 
 {
    "seed": "<string>. base58 encoded>",
