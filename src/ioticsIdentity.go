@@ -109,18 +109,20 @@ func init() {
 	// we have to declare our functions in an init func otherwise they aren't
 	// available in JS land at the call time.
 
-	lib := js.Global().Get("ioticsIdentity")
-	if lib.IsNull() {
-		jsInfo("Your module should be exported as ioticsIdentityBrowser or ioticsIdentityNode!")
-		panic("IOTICS Identity WebAssembly NOT initialised!")
-	}
+	var id js.Value
 	e := "browser"
 	if isNode() {
 		e = "node"
+		id = js.Global()
+	} else {
+		lib := js.Global().Get("ioticsIdentity")
+		if lib.IsNull() {
+			jsInfo("Your module should be exported as ioticsIdentity")
+			panic("IOTICS Identity WebAssembly NOT initialised!")
+		}
+		id = lib.Get("IoticsIdentity")
 	}
 	jsInfo(fmt.Sprintf("Environment detected: %+v", e))
-
-	var id = lib.Get("IoticsIdentity")
 
 	id.Set("setIdentitiesCacheConfig", js.FuncOf(SetIdentitiesCacheConfig))
 	id.Set("createDefaultSeed", js.FuncOf(CreateDefaultSeedP))

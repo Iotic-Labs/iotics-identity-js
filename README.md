@@ -300,3 +300,9 @@ Thank you to:
 - https://medium.com/@jeantimex/create-a-javascript-library-and-fully-automate-the-releases-ccce93153dbb
 - https://github.com/golang/go/issues/29845
 - https://levelup.gitconnected.com/how-to-bundle-your-library-for-both-nodejs-and-browser-with-webpack-3584ec8197eb
+
+
+
+const nodeCrypto = require("crypto"); globalThis.crypto = { getRandomValues(b) { nodeCrypto.randomFillSync(b); }, };
+
+throw new Error("globalThis.crypto is not available, polyfill required (crypto.getRandomValues only)");

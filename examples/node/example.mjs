@@ -14,20 +14,10 @@
     limitations under the License.
 */
 
+import { existsSync } from 'fs';
 import pkg from './ioticsIdentity.js';
 
-const {
-    exitLib,
-    loadLib,
-    createDefaultSeed,
-    getRegisteredDocument,
-    createAgentIdentity,
-    createUserIdentity,
-    createTwinIdentity,
-    delegateControl,
-    delegateAuthentication,
-    createAgentAuthToken
-} = pkg;
+const { loadLib } = pkg;
 
 const RESOLVER = "https://did.stg.iotics.com"
 const SEED = "EcnwYkUvCwZUrX4QbChrLXBuEc5qsVxMr5upX3VSsmgo"
@@ -83,7 +73,6 @@ loadLib().then(() => {
         console.log("user identity: " + resp)
     }).catch((err) => console.error(err))
 
-    exitLib()
 })
 
 

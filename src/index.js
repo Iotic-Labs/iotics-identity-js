@@ -51,7 +51,7 @@ async function loadLib() {
             // for now we wait a bit before returning the promise so that we give it enough time
             // in fact - it'll all be done once the startCb callback is invoked (this callback is called 
             // by the golang code)
-            return delay(500)
+            return delay(1500)
         })
 
 

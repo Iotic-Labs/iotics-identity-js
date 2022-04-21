@@ -25,7 +25,7 @@ $(WASM_OUT): $(DIST_DIR)
 .PHONY: clean build-wasm build-browser build-node build serve
 
 clean:
-	@rm -rf $(DIST_DIR) $(WASM_EXEC_JS) $(BROWSER_EXAMPLES_DIR)/ioticsIdentity*.* $(NODE_EXAMPLES_DIR)/ioticsIdentity*.*
+	@rm -rf $(DIST_DIR) $(WASM_EXEC_JS) $(BROWSER_EXAMPLES_DIR)/ioticsIdentity.* $(NODE_EXAMPLES_DIR)/ioticsIdentity.*
 
 build-wasm: $(WASM_OUT) $(WASM_EXEC_JS)
 	@cp $(WASM_OUT) $(BROWSER_EXAMPLES_DIR)
@@ -41,3 +41,9 @@ build: clean build-browser build-node
 
 serve:
 	@npx http-server -p 9090 -o $(BROWSER_EXAMPLES_DIR)
+
+patch-node-polyfill:
+	$(eval OLD:=throw new Error\(\"globalThis.crypto is not available, polyfill required \(crypto.getRandomValues only\)\"\)\;)
+	$(eval NEW:=const nodeCrypto=require\(\"crypto\"\)\; globalThis.crypto = \{ getRandomValues\(b\) \{ nodeCrypto.randomFillSync\(b\)\; \}, \}\;)
+	$(shell sed -i 's/$(OLD)/$(NEW)/' examples/node/ioticsIdentity.js)
+	

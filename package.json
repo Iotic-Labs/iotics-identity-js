@@ -27,7 +27,7 @@
   },
   "scripts": {
     "build:browser": "webpack && cp ./dist/browser/ioticsIdentity.js ./dist/ioticsIdentity.wasm ./examples/browser",
-    "build:node": "webpack && cp ./dist/nodejs/ioticsIdentity.js ./dist/ioticsIdentity.wasm ./examples/node/ && node ./examples/node/example.mjs",
+    "build:node": "webpack && cp ./dist/nodejs/ioticsIdentity.js ./dist/ioticsIdentity.wasm ./examples/node/ && ./polyfill_crypto_node.sh && node ./examples/node/example.mjs",
     "build": "webpack"
   },
   "repository": {
@@ -45,6 +45,9 @@
     "fs": false,
     "path": false,
     "os": false
+  },
+  "node": {
+    "crypto": true
   },
   "exports": {
     "./nodejs": "./dist/nodejs",
