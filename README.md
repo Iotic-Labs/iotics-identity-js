@@ -43,7 +43,30 @@ List of things that need to be done
 
 ## How to use it: Javascript
 
+### Load the library
+
+```npm i iotics-identity-js```
+
+#### NodeJS
+
 Import the library in NodeJS
+
+```javascript
+import pkg from 'iotics-identity-js/dist/nodejs/ioticsIdentity.js';
+```
+
+See example in `examples/nodejs/example.mjs`
+
+#### Browser
+
+If you bundle your browser application, import `iotics-identity-js/dist/browser/ioticsIdentity.js`, else,
+copy the files from `node_modules/iotics-identity-js/dist/browser` in your environment and load them as
+
+```html
+  <script src="./ioticsIdentity.js"></script>
+```
+
+Then, in your application:
 
 ```javascript
 const { IoticsIdentity, loadLib } = ioticsIdentity;
@@ -292,12 +315,6 @@ function setIdentitiesCacheConfig(conf)
 
 Thank you to:
 
-- https://medium.com/@jeantimex/create-a-javascript-library-and-fully-automate-the-releases-ccce93153dbb
-- https://github.com/golang/go/issues/29845
-- https://levelup.gitconnected.com/how-to-bundle-your-library-for-both-nodejs-and-browser-with-webpack-3584ec8197eb
-
-
-
-const nodeCrypto = require("crypto"); globalThis.crypto = { getRandomValues(b) { nodeCrypto.randomFillSync(b); }, };
-
-throw new Error("globalThis.crypto is not available, polyfill required (crypto.getRandomValues only)");
+- [create-a-javascript-library-and-fully-automate-the-releases](https://medium.com/@jeantimex/create-a-javascript-library-and-fully-automate-the-releases-ccce93153dbb)
+- [wasm: global functions from wasm not working from node](https://github.com/golang/go/issues/29845)
+- [how-to-bundle-your-library-for-both-nodejs-and-browser-with-webpack](https://levelup.gitconnected.com/how-to-bundle-your-library-for-both-nodejs-and-browser-with-webpack-3584ec8197eb)
