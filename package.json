@@ -1,7 +1,7 @@
 {
   "name": "smartrics-identity-js",
   "main": "./src/index.js",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Iotics Identity SDK in JS",
   "dependencies": {
     "buffer": "^6.0.3",
