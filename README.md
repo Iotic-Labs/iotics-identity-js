@@ -43,7 +43,7 @@ List of things that need to be done
 
 ## How to use it: Javascript
 
-Import the library
+Import the library in NodeJS
 
 ```javascript
 const { IoticsIdentity, loadLib } = ioticsIdentity;
@@ -199,11 +199,6 @@ The `loadLib` function loads the lib wasm. The `IoticsIdentity` object is the na
 The following functions are methods of the object `IoticsIdentity`:
 
 ```javascript
-/**
-  * terminates the wasm module
-  */
-function exitLib() 
-
 /**
   * Creates a 256 bits seed encoded base58
   *

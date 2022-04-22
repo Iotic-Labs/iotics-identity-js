@@ -133,7 +133,7 @@ func init() {
 	id.Set("delegateAuthentication", js.FuncOf(DelegateAuthenticationP))
 	id.Set("getRegisteredDocument", js.FuncOf(GetRegisteredDocumentP))
 	id.Set("createAgentAuthToken", js.FuncOf(CreateAgentAuthTokenP))
-	id.Set("exit", js.FuncOf(Exit))
+	id.Set("exitIdSDK", js.FuncOf(Exit))
 	id.Set("ping", js.FuncOf(Ping))
 
 	jsInfo("IOTICS Identity WebAssembly initialised!")

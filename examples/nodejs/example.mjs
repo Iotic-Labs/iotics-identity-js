@@ -14,9 +14,8 @@
     limitations under the License.
 */
 
-import { existsSync } from 'fs';
-import { exit } from 'process';
-import pkg from './ioticsIdentity.js';
+import pkg from 'smartrics-identity-js/dist/nodejs/ioticsIdentity.js';
+import { exit } from "process"
 
 const { loadLib } = pkg;
 

@@ -10,6 +10,8 @@ WASM_EXEC_JS=$(SRC_DIR)/wasm_exec.js
 LIB_GO=$(SRC_DIR)/ioticsIdentity.go
 BROWSER_EXAMPLES_DIR=$(EXAMPLES_DIR)/browser
 NODE_EXAMPLES_DIR=$(EXAMPLES_DIR)/nodejs
+BROWSER_DIST_DIR=$(DIST_DIR)/browser
+NODE_DIST_DIR=$(DIST_DIR)/nodejs
 
 
 # since this is getting the file from the local machine, 
@@ -36,16 +38,14 @@ npm-build: $(DIST_DIR) build-wasm
 
 compile: $(DIST_DIR) build-wasm npm-build
 	$(shell ./polyfill_crypto_node.sh)
+	@cp $(WASM_OUT) $(BROWSER_DIST_DIR) 
+	@cp $(WASM_OUT) $(NODE_DIST_DIR) 
 
-test-prep: compile	    
-	@cp -r $(DIST_DIR)/* $(EXAMPLES_DIR) 
-
-test-node: test-prep
-	@cp $(WASM_OUT) $(NODE_EXAMPLES_DIR)
+test-node: compile
 	@node $(NODE_EXAMPLES_DIR)/example.mjs
 	    
-test-browser: test-prep
-	@cp $(WASM_OUT) $(BROWSER_EXAMPLES_DIR)
+test-browser: compile
+	@cp $(BROWSER_DIST_DIR)/* $(BROWSER_EXAMPLES_DIR)
 
 build: clean compile test-node test-browser
 

@@ -49,6 +49,8 @@
   },
   "exports": {
     "./nodejs": "./dist/nodejs",
-    "./browser": "./dist/browser"
+    "./browser": "./dist/browser",
+    "./dist/nodejs/ioticsIdentity.js": "./dist/nodejs/ioticsIdentity.js",
+    "./dist/browser/ioticsIdentity.js": "./dist/browser/ioticsIdentity.js"
   }
 }
