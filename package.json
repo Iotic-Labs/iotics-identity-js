@@ -1,7 +1,7 @@
 {
-  "name": "smartrics-identity-js",
+  "name": "iotics-identity-js",
   "main": "./src/index.js",
-  "version": "0.0.3",
+  "version": "0.0.1",
   "description": "Iotics Identity SDK in JS",
   "dependencies": {
     "buffer": "^6.0.3",
@@ -30,15 +30,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Iotic-Labs/iotics-esp.git"
+    "url": "git+https://github.com/Iotic-Labs/iotics-identity-js.git"
   },
   "keywords": [],
-  "author": "@smartrics",
+  "author": "smartrics@gmail.com",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/Iotic-Labs/iotics-esp/issues"
+    "url": "https://github.com/Iotic-Labs/iotics-identity-js/issues"
   },
-  "homepage": "https://github.com/Iotic-Labs/iotics-esp#readme",
+  "homepage": "https://github.com/Iotic-Labs/iotics-identity-js",
   "browser": {
     "fs": false,
     "path": false,
