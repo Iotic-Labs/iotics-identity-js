@@ -42,6 +42,7 @@ compile: $(DIST_DIR) build-wasm npm-build
 	@cp $(WASM_OUT) $(NODE_DIST_DIR) 
 
 test-node: compile
+	@npm link iotics-identity-js
 	@node $(NODE_EXAMPLES_DIR)/example.mjs
 	    
 test-browser: compile
