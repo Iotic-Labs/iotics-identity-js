@@ -12,18 +12,30 @@ The applications are packed with webpack. The libraries are built in the `./dist
 npm install
 ```
 
-### Make browser library
+### Build the library
 
 ```shell
-make build-wasm build-browser
+make build
 ```
 
-Run an http server with `make serve` and navigate to `http://localhost:9090` to access the example application at `examples/browser`
-
-### Make node library
+### Test the browser library
 
 ```shell
-make build-wasm build-browser
+make test-browser
+```
+
+Run an http server with `make serve` and navigate to `http://localhost:9090/examples/browser` to access the example application at `examples/browser`
+
+### Test node library
+
+```shell
+make test-node
+```
+
+To run the node example:
+
+```shell
+node examples/node/example.mjs
 ```
 
 ## TODO
@@ -33,15 +45,16 @@ List of things that need to be done
 ### Features
 
 1. Not all APIs have been mapped
-2. Functions are exported in the global namespace - maybe there's a better way
-3. node is using active wait to pause for 500ms to wait for the functions to be loaded in the js global.
-4. npm packaging and deployment
+2. In nodejs, functions are exported in the global namespace - maybe there's a better way
+3. node is using active wait to pause for 1500ms to wait for the functions to be loaded in the js global.
 
 ### Known Issues
 
-1. The node examples are still buggy - golang wasm compiles net/http client using `fetch` so, in node `node-fetch` must be correctly installed and loaded.
+1. Golang wasm compiles net/http client using `fetch` so, in node `node-fetch` must be correctly installed and loaded.
 
-## How to use it: Javascript
+## How to use it
+
+How to use the library to build your own application.
 
 ### Load the library
 
