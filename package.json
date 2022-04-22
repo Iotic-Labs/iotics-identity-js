@@ -1,7 +1,7 @@
 {
-  "name": "iotics-identity-js",
+  "name": "smartrics-identity-js",
   "main": "./src/index.js",
-  "version": "1.0.0",
+  "version": "0.0.2",
   "description": "Iotics Identity SDK in JS",
   "dependencies": {
     "buffer": "^6.0.3",
@@ -26,8 +26,6 @@
     "webpack-node-externals": "^3.0.0"
   },
   "scripts": {
-    "build:browser": "webpack && cp ./dist/browser/ioticsIdentity.js ./dist/ioticsIdentity.wasm ./examples/browser",
-    "build:node": "webpack && cp ./dist/nodejs/ioticsIdentity.js ./dist/ioticsIdentity.wasm ./examples/node/ && ./polyfill_crypto_node.sh && node ./examples/node/example.mjs",
     "build": "webpack"
   },
   "repository": {

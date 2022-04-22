@@ -3,11 +3,13 @@ GO_BIN := $(shell dirname $(GO_EXEC))
 GOROOT := $(shell dirname $(GO_BIN))
 
 DIST_DIR=./dist
-WASM_OUT=$(DIST_DIR)/ioticsIdentity.wasm
-WASM_EXEC_JS=./src/wasm_exec.js
-LIB_GO=./src/ioticsIdentity.go
-BROWSER_EXAMPLES_DIR=./examples/browser
-NODE_EXAMPLES_DIR=./examples/node
+SRC_DIR=./src
+EXAMPLES_DIR=./examples
+WASM_OUT=$(SRC_DIR)/ioticsIdentity.wasm
+WASM_EXEC_JS=$(SRC_DIR)/wasm_exec.js
+LIB_GO=$(SRC_DIR)/ioticsIdentity.go
+BROWSER_EXAMPLES_DIR=$(EXAMPLES_DIR)/browser
+NODE_EXAMPLES_DIR=$(EXAMPLES_DIR)/nodejs
 
 
 # since this is getting the file from the local machine, 
@@ -18,32 +20,39 @@ $(DIST_DIR):
 $(WASM_EXEC_JS): $(DIST_DIR)
 	@cp ${GOROOT}/misc/wasm/wasm_exec.js $(WASM_EXEC_JS)
 
-$(WASM_OUT): $(DIST_DIR)
+$(WASM_OUT): 
 	@GOOS=js GOARCH=wasm go build -o $(WASM_OUT) $(LIB_GO)
 
 
-.PHONY: clean build-wasm build-browser build-node build serve
+.PHONY: clean build-wasm build serve compile test
 
 clean:
-	@rm -rf $(DIST_DIR) $(WASM_EXEC_JS) $(BROWSER_EXAMPLES_DIR)/ioticsIdentity.* $(NODE_EXAMPLES_DIR)/ioticsIdentity.*
+	@rm -rf $(DIST_DIR) $(WASM_EXEC_JS) ${WASM_OUT} $(BROWSER_EXAMPLES_DIR)/ioticsIdentity.* $(NODE_EXAMPLES_DIR)/ioticsIdentity.*
 
 build-wasm: $(WASM_OUT) $(WASM_EXEC_JS)
-	@cp $(WASM_OUT) $(BROWSER_EXAMPLES_DIR)
+
+npm-build: $(DIST_DIR) build-wasm
+	@npm run build
+
+compile: $(DIST_DIR) build-wasm npm-build
+	$(shell ./polyfill_crypto_node.sh)
+
+test-prep: compile	    
+	@cp -r $(DIST_DIR)/* $(EXAMPLES_DIR) 
+
+test-node: test-prep
 	@cp $(WASM_OUT) $(NODE_EXAMPLES_DIR)
+	@node $(NODE_EXAMPLES_DIR)/example.mjs
+	    
+test-browser: test-prep
+	@cp $(WASM_OUT) $(BROWSER_EXAMPLES_DIR)
 
-build-browser: build-wasm
-	@npm run build:browser
-	 
-build-node: build-wasm
-	@npm run build:node
-
-build: clean build-browser build-node
+build: clean compile test-node test-browser
 
 serve:
 	@npx http-server -p 9090 -o $(BROWSER_EXAMPLES_DIR)
 
-patch-node-polyfill:
-	$(eval OLD:=throw new Error\(\"globalThis.crypto is not available, polyfill required \(crypto.getRandomValues only\)\"\)\;)
-	$(eval NEW:=const nodeCrypto=require\(\"crypto\"\)\; globalThis.crypto = \{ getRandomValues\(b\) \{ nodeCrypto.randomFillSync\(b\)\; \}, \}\;)
-	$(shell sed -i 's/$(OLD)/$(NEW)/' examples/node/ioticsIdentity.js)
-	
+# npm publish expects a publish npm token to be setup and configured in .npmrc
+# https://docs.npmjs.com/about-access-tokens
+publish:
+	npm publish

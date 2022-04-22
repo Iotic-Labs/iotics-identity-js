@@ -15,6 +15,7 @@
 */
 
 import { existsSync } from 'fs';
+import { exit } from 'process';
 import pkg from './ioticsIdentity.js';
 
 const { loadLib } = pkg;
@@ -50,7 +51,7 @@ loadLib().then(() => {
         "password": null,
         "override": false
     }).then((resp) => {
-        console.log("agent identity: " + resp)
+        console.log("agent identity: " + JSON.stringify(resp))
     }).catch((err) => console.error(err))
 
     createUserIdentity(RESOLVER, {
@@ -60,7 +61,7 @@ loadLib().then(() => {
         "password": null,
         "override": false
     }).then((resp) => {
-        console.log("user identity: " + resp)
+        console.log("user identity: " + JSON.stringify(resp))
     }).catch((err) => console.error(err))
 
     createTwinIdentity(RESOLVER, {
@@ -70,8 +71,12 @@ loadLib().then(() => {
         "password": null,
         "override": false
     }).then((resp) => {
-        console.log("user identity: " + resp)
+        console.log("user identity: " + JSON.stringify(resp))
     }).catch((err) => console.error(err))
+
+    setTimeout(() => {
+        exit()
+    }, 1000)
 
 })
 
