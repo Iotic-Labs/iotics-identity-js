@@ -4,7 +4,7 @@ The nodejs example can be run either via the `iotics-identity-js/Makefile`
 (`make test-node`, see main README for further details) for testing the package in development
 or via
 
-```
+```bash
 npm install
 node ./example.mjs
 ```
