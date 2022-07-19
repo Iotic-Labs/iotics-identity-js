@@ -29,16 +29,6 @@ const AGENT_KEY = "#agent-key-0"
 const TWIN_KEY = "#twin-key-0"
 const AUDIENCE = "https://your.iotics.space"
 
-function newCreateIdentityOpts(idType) {
-    return {
-        "seed": $("#seed").val(),
-        "key": $("#" + idType + "KeyId").val(),
-        "name": $("#" + idType + "NameId").val(),
-        "password": null,
-        "override": false
-    }
-}
-
 
 loadLib().then(() => {
     createDefaultSeed().then((response) => console.log("seed: " + JSON.stringify(response)))

@@ -27,18 +27,18 @@ window.onload = function (e) {
 };
 
 function initUi() {
-    $("#createDefaultSeedId").click(createDefaultSeedClick)
-    $("#createUserIdentityId").click(createUserIdentityClick)
-    $("#createAgentIdentityId").click(createAgentIdentityClick)
-    $("#createTwinIdentityId").click(createTwinIdentityClick)
-    $("#delegateAuthenticationId").click(delegateAuthenticationClick)
-    $("#delegateControlId").click(delegateControlClick)
-    $("#createAgentAuthTokenId").click(createAgentAuthTokenClick)
-    $("#setIdentitiesCacheConfigId").click(setIdentitiesCacheConfigClick)
+    setEventById("createDefaultSeedId", "click", createDefaultSeedClick)
+    setEventById("createUserIdentityId", "click", createUserIdentityClick)
+    setEventById("createAgentIdentityId", "click", createAgentIdentityClick)
+    setEventById("createTwinIdentityId", "click", createTwinIdentityClick)
+    setEventById("delegateAuthenticationId", "click", delegateAuthenticationClick)
+    setEventById("delegateControlId", "click", delegateControlClick)
+    setEventById("createAgentAuthTokenId", "click", createAgentAuthTokenClick)
+    setEventById("setIdentitiesCacheConfigId", "click", setIdentitiesCacheConfigClick)
 
-    $("#getUserDocId").click(getUserDocClick)
-    $("#getAgentDocId").click(getAgentDocClick)
-    $("#getTwinDocId").click(getTwinDocClick)
+    setEventById("getUserDocId", "click", getUserDocClick)
+    setEventById("getAgentDocId", "click", getAgentDocClick)
+    setEventById("getTwinDocId", "click", getTwinDocClick)
 }
 
 function outputJSON(v) {
@@ -46,7 +46,8 @@ function outputJSON(v) {
     if (getType(v) == 'string') {
         o = JSON.parse(v)
     }
-    $("#output-text").html(JSON.stringify(o, "", 2));
+    content = JSON.stringify(o, "", 2)
+    setHtml("output-text", content)
 }
 
 /**
@@ -66,14 +67,13 @@ function parseJwt(token) {
 
 async function createAgentAuthTokenClick() {
     agentGetIdentityOpts = newGetIdentityOpts("agent")
-    userDiD = $("#userDidId").val()
-    durationMs = $("#tokenDuration").val()
-    audience = $("#tokenAudience").val()
+    userDiD = getValueById("userDidId")
+    durationMs = getValueById("tokenDuration")
+    audience = getValueById("tokenAudience")
 
     json = await IoticsIdentity.createAgentAuthToken(agentGetIdentityOpts, userDiD, durationMs, audience)
 
-
-    if ($("#unpackToken").prop("checked") == true) {
+    if (getCheckedById("unpackToken") == true) {
         json = parseJwt(json.token)
     }
 
@@ -83,14 +83,14 @@ async function createAgentAuthTokenClick() {
 
 async function createDefaultSeedClick() {
     json = await IoticsIdentity.createDefaultSeed()
-    $("#seed").val(json.seed)
+    setValueById("seed", json.seed)
     outputJSON(json)
     return false;
 }
 
 function setIdentitiesCacheConfigClick() {
-    ttl = $("#cacheTtl").val()
-    size = $("#cacheSize").val()
+    ttl = getValueById("cacheTtl")
+    size = getValueById("cacheSize")
     conf = {
         "ttlSec": ttl,
         "size": size,
@@ -125,8 +125,8 @@ async function createTwinIdentityClick() {
 }
 
 async function getRegisteredDocByType(type) {
-    resolver = $("#resolverId").val()
-    v = $("#" + type + "DidId").val()
+    resolver = getValueById("resolverId")
+    v = getValueById(type + "DidId")
     json = await IoticsIdentity.getRegisteredDocument(resolver, v);
     jDoc = JSON.parse(json.doc)
     outputJSON(jDoc)
@@ -134,28 +134,28 @@ async function getRegisteredDocByType(type) {
 }
 
 async function createIdentityClick(func, type) {
-    resolver = $("#resolverId").val()
+    resolver = getValueById("resolverId")
     json = await func(resolver, newCreateIdentityOpts(type));
     outputJSON(json)
-    $("#" + type + "DidId").val(json.did)
+    setValueById(type + "DidId", json.did)
     return false;
 }
 
 async function delegateControlClick() {
-    resolver = $("#resolverId").val()
+    resolver = getValueById("resolverId")
     twinGetIdentityOpts = newGetIdentityOpts("twin")
     agentGetIdentityOpts = newGetIdentityOpts("agent")
-    delegationName = $("#controlDelegationName").val()
+    delegationName = getValueById("controlDelegationName")
     json = await IoticsIdentity.delegateControl(resolver, twinGetIdentityOpts, agentGetIdentityOpts, delegationName)
     outputJSON(json)
     return false
 }
 
 async function delegateAuthenticationClick() {
-    resolver = $("#resolverId").val()
+    resolver = getValueById("resolverId")
     userGetIdentityOpts = newGetIdentityOpts("user")
     agentGetIdentityOpts = newGetIdentityOpts("agent")
-    delegationName = $("#authenticationDelegationName").val()
+    delegationName = getValueById("authenticationDelegationName")
     json = await IoticsIdentity.delegateAuthentication(resolver, userGetIdentityOpts, agentGetIdentityOpts, delegationName)
     outputJSON(json)
     return false
@@ -163,9 +163,9 @@ async function delegateAuthenticationClick() {
 
 function newCreateIdentityOpts(idType) {
     return {
-        "seed": $("#seed").val(),
-        "key": $("#" + idType + "KeyId").val(),
-        "name": $("#" + idType + "NameId").val(),
+        "seed": getValueById("seed"),
+        "key": getValueById(idType + "KeyId"),
+        "name": getValueById(idType + "NameId"),
         "password": null,
         "override": false
     }
@@ -173,10 +173,10 @@ function newCreateIdentityOpts(idType) {
 
 function newGetIdentityOpts(idType) {
     return {
-        "seed": $("#seed").val(),
-        "key": $("#" + idType + "KeyId").val(),
-        "did": $("#" + idType + "DidId").val(),
-        "name": $("#" + idType + "NameId").val(),
+        "seed": getValueById("seed"),
+        "key": getValueById(idType + "KeyId"),
+        "did": getValueById(idType + "DidId"),
+        "name": getValueById(idType + "NameId"),
         "password": null,
     }
 }
@@ -186,4 +186,24 @@ function getType(p) {
     else if (typeof p == 'string') return 'string';
     else if (p != null && typeof p == 'object') return 'object';
     else return 'other';
+}
+
+function getValueById(id) {
+    return document.getElementById(id).value
+}
+
+function setValueById(id, value) {
+    return document.getElementById(id).value = value
+}
+
+function setHtml(id, content) {
+    document.getElementById(id).innerHTML = content
+}
+
+function setEventById(id, event, handler) {
+    document.getElementById(id).addEventListener(event, handler);
+}
+
+function getCheckedById(id) {
+    return document.getElementById(id).checked
 }
