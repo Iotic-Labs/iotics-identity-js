@@ -1,5 +1,5 @@
 {
-  "name": "iotics-identity-js",
+  "name": "iotics-identity-nodejs-example",
   "main": "./src/index.js",
   "version": "0.0.1",
   "description": "Iotics Identity SDK in JS - Simple example",
