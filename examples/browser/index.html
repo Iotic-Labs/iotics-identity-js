@@ -1,0 +1,202 @@
+<html>
+  <!--
+    Copyright 2022 IOTICS
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+  -->
+  <head>
+    <title>Test IOTICS Identity</title>
+  </head>
+  <link rel="stylesheet" href="./index.css" />
+
+  <script src="./ioticsIdentity.js"></script>
+
+  <script src="./index.js"></script>
+  <body>
+    <div style="width: 100%; display: table">
+      <div style="display: table-row">
+        <div style="width: 600px; display: table-cell">
+          <div>
+            <label for="resolverId">Resolver address: </label>
+            <input
+              id="resolverId"
+              type="text"
+              value="https://did.stg.iotics.com"
+            />
+          </div>
+          <br />
+          <div>
+            <label for="seed">Seed: </label>
+            <input
+              id="seed"
+              type="text"
+              size="50"
+              value="EcnwYkUvCwZUrX4QbChrLXBuEc5qsVxMr5upX3VSsmgo"
+            />
+          </div>
+          <div>
+            <label for="createDefaultSeedId">Generates a new seed: </label>
+            <input
+              id="createDefaultSeedId"
+              type="button"
+              value="create default seed"
+            />
+          </div>
+          <br />
+
+          <div>
+            <label for="userNameId">User name: </label>
+            <input id="userNameId" type="text" value="#user-0" />
+          </div>
+          <div>
+            <label for="userKeyId">User key: </label>
+            <input id="userKeyId" type="text" value="user-key-0" />
+          </div>
+          <div>
+            <label for="userDidId">User did: </label>
+            <input id="userDidId" size="40" type="text" value="" />
+          </div>
+          <div>
+            <label for="createUserIdentityId">For user identity: </label>
+            <input
+              id="createUserIdentityId"
+              type="button"
+              value="get/create user identity"
+            />
+            <input id="getUserDocId" type="button" value="get user did doc" />
+          </div>
+          <br />
+
+          <div>
+            <label for="agentNameId">Agent name: </label>
+            <input id="agentNameId" type="text" value="#agent-0" />
+          </div>
+          <div>
+            <label for="agentKeyId">Agent key: </label>
+            <input id="agentKeyId" type="text" value="agent-key-0" />
+          </div>
+          <div>
+            <label for="agentDidId">Agent did: </label>
+            <input id="agentDidId" size="40" type="text" value="" />
+          </div>
+          <div>
+            <label for="createAgentIdentityId">For agent identity: </label>
+            <input
+              id="createAgentIdentityId"
+              type="button"
+              value="get/create agent identity"
+            />
+            <input id="getAgentDocId" type="button" value="get agent did doc" />
+          </div>
+          <br />
+          <div>
+            <label for="twinNameId">Twin name: </label>
+            <input id="twinNameId" type="text" value="#twin-0" />
+          </div>
+          <div>
+            <label for="twinKeyId">Twin key: </label>
+            <input id="twinKeyId" type="text" value="twin-key-0" />
+          </div>
+          <div>
+            <label for="twinDidId">Twin did: </label>
+            <input id="twinDidId" size="40" type="text" value="" />
+          </div>
+          <div>
+            <label for="createTwinIdentityId">Creates twin identity: </label>
+            <input
+              id="createTwinIdentityId"
+              type="button"
+              value="get/create twin identity"
+            />
+            <input id="getTwinDocId" type="button" value="get twin did doc" />
+          </div>
+          <br />
+          <div>
+            <label for="authenticationDelegationName"
+              >auth delegation name:
+            </label>
+            <input
+              id="authenticationDelegationName"
+              type="text"
+              value="#authDelegation_1"
+            />
+            <input
+              id="delegateAuthenticationId"
+              type="button"
+              value="delegate authentication"
+            />
+          </div>
+          <br />
+          <div>
+            <label for="controlDelegationName">control delegation name: </label>
+            <input
+              id="controlDelegationName"
+              type="text"
+              value="#controlDelegation_1"
+            />
+            <input
+              id="delegateControlId"
+              type="button"
+              value="delegate control"
+            />
+          </div>
+          <br />
+          <div>
+            <label for="tokenAudience">token audience: </label>
+            <input
+              id="tokenAudience"
+              type="text"
+              value="https://your.iotics.space"
+            />
+            <br />
+            <label for="tokenDuration">token duration (ms): </label>
+            <input id="tokenDuration" type="text" value="1000" />
+            <br />
+            <label for="unpackToken">unpack token: </label>
+            <input id="unpackToken" type="checkbox" checked />
+            <input
+              id="createAgentAuthTokenId"
+              type="button"
+              value="create agent auth token"
+            />
+          </div>
+          <br />
+          <div>
+            <label for="cacheTtl">cacheTtl (sec): </label>
+            <input id="cacheTtl" type="text" value="10" />
+            <br />
+            <label for="cacheSize">cacheSize: </label>
+            <input id="cacheSize" type="text" value="128" />
+            <input
+              id="setIdentitiesCacheConfigId"
+              type="button"
+              value="set cache config"
+            />
+          </div>
+        </div>
+        <div
+          style="
+            display: table-cell;
+            overflow: hidden;
+            overflow-wrap: break-word;
+            background-color: #efefdf;
+          "
+        >
+          <div id="output">
+            <pre id="output-text"></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,31 @@
+{
+  "name": "iotics-identity-nodejs-example",
+  "main": "./src/index.js",
+  "version": "0.0.1",
+  "description": "Iotics Identity SDK in JS - Simple example",
+  "dependencies": {
+    "iotics-identity-js": "^0.0.1"
+  },
+  "scripts": {
+    "build": "webpack"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Iotic-Labs/iotics-identity-js.git"
+  },
+  "keywords": [],
+  "author": "smartrics@gmail.com",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/Iotic-Labs/iotics-identity-js/issues"
+  },
+  "homepage": "https://github.com/Iotic-Labs/iotics-identity-js",
+  "browser": {
+    "fs": false,
+    "path": false,
+    "os": false
+  },
+  "node": {
+    "crypto": true
+  }
+}
